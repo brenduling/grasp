@@ -5,114 +5,382 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Grasp — powered by brenduling</title>
     <style>
-        /* NEO-BRUTALIST DESIGN SYSTEM */
+        /* BASE THEME (Default Modern) */
         :root {
-            --bg: #E8E6DF;
-            --surface: #FFFFFF;
-            --border: #111111;
-            --primary: #4B0082; /* Deep Indigo */
-            --secondary: #00FF66; /* Neon Green */
-            --accent: #FF5E00; /* Safety Orange */
-            --alert: #FF003C; /* Crisp Red */
-            --text-main: #111111;
-            --text-muted: #555555;
-            --shadow: 4px 4px 0px var(--border);
-            --transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --bg: #F4F6F8; --surface: #FFFFFF; --border: #E2E8F0;
+            --primary: #2E2A8C; --primary-glow: rgba(46, 42, 140, 0.15);
+            --secondary: #2EE6A6; --accent: #FFC857; --alert: #FF3B30;
+            --text-main: #1C1C1E; --text-muted: #8E8E93;
+            --shadow: 0 8px 24px rgba(0,0,0,0.04);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* 1. EXPLICIT LIGHT & DARK MODES */
+        body.theme-light {
+            --bg: #FFFFFF; --surface: #F9FAFB; --border: #E5E7EB;
+            --primary: #000000; --primary-glow: rgba(0, 0, 0, 0.1);
+            --secondary: #10B981; --accent: #F59E0B; --text-main: #111827; --text-muted: #6B7280;
+        }
+        body.theme-dark {
+            --bg: #121212; --surface: #1E1E1E; --border: #333333;
+            --primary: #FFFFFF; --primary-glow: rgba(255, 255, 255, 0.1);
+            --secondary: #2EE6A6; --accent: #FFC857; --text-main: #F3F4F6; --text-muted: #9CA3AF;
+            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        /* EXISTING THEMES */
+        body.theme-ocean {
+            --bg: #F0F9FF; --surface: #FFFFFF; --border: #BAE6FD;
+            --primary: #0369A1; --primary-glow: rgba(3, 105, 161, 0.15);
+            --secondary: #38BDF8; --accent: #FDE047; --text-main: #0C4A6E;
+        }
+        body.theme-forest {
+            --bg: #F0FDF4; --surface: #FFFFFF; --border: #A7F3D0;
+            --primary: #047857; --primary-glow: rgba(4, 120, 87, 0.15);
+            --secondary: #34D399; --accent: #FBBF24; --text-main: #064E3B;
+        }
+        body.theme-sunset {
+            --bg: #FFF7ED; --surface: #FFFFFF; --border: #FED7AA;
+            --primary: #C2410C; --primary-glow: rgba(194, 65, 12, 0.15);
+            --secondary: #FB923C; --accent: #FDE047; --text-main: #7C2D12;
+        }
+        body.theme-midnight {
+            --bg: #0F172A; --surface: #1E293B; --border: #334155;
+            --primary: #6366F1; --primary-glow: rgba(99, 102, 241, 0.15);
+            --secondary: #38BDF8; --accent: #FDE047;
+            --text-main: #F8FAFC; --text-muted: #94A3B8;
+            --shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        /* POP CULTURE SET 1 */
+        body.theme-abyssal {
+            --bg: #1A0B2E; --surface: #2D1B4E; --border: #4A2B7A;
+            --primary: #E11D48; --primary-glow: rgba(225, 29, 72, 0.2);
+            --secondary: #A855F7; --accent: #F43F5E;
+            --text-main: #F3E8FF; --text-muted: #C084FC;
+            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        body.theme-lightborn {
+            --bg: #FFFAF0; --surface: #FFFFFF; --border: #FDE047;
+            --primary: #D97706; --primary-glow: rgba(217, 119, 6, 0.15);
+            --secondary: #38BDF8; --accent: #F59E0B;
+            --text-main: #451A03; --text-muted: #92400E;
+        }
+        body.theme-venom {
+            --bg: #0F172A; --surface: #1E293B; --border: #059669;
+            --primary: #10B981; --primary-glow: rgba(16, 185, 129, 0.2);
+            --secondary: #8B5CF6; --accent: #34D399;
+            --text-main: #F8FAFC; --text-muted: #94A3B8;
+            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        body.theme-leaf {
+            --bg: #FFF7ED; --surface: #FFFFFF; --border: #F97316;
+            --primary: #EA580C; --primary-glow: rgba(234, 88, 12, 0.15);
+            --secondary: #2563EB; --accent: #FACC15;
+            --text-main: #1E1B4B; --text-muted: #4338CA;
+        }
+        body.theme-warrior {
+            --bg: #FEFCE8; --surface: #FFFFFF; --border: #FCD34D;
+            --primary: #F59E0B; --primary-glow: rgba(245, 158, 11, 0.15);
+            --secondary: #3B82F6; --accent: #EF4444;
+            --text-main: #172554; --text-muted: #1E3A8A;
+        }
+        body.theme-titan {
+            --bg: #F0FDF4; --surface: #FFFFFF; --border: #86EFAC;
+            --primary: #15803D; --primary-glow: rgba(21, 128, 61, 0.15);
+            --secondary: #991B1B; --accent: #A16207;
+            --text-main: #064E3B; --text-muted: #065F46;
+        }
+        body.theme-neotokyo {
+            --bg: #09090B; --surface: #18181B; --border: #BE185D;
+            --primary: #E11D48; --primary-glow: rgba(225, 29, 72, 0.2);
+            --secondary: #06B6D4; --accent: #FDE047;
+            --text-main: #FDF4FF; --text-muted: #CBD5E1;
+            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        body.theme-candy {
+            --bg: #FDF2F8; --surface: #FFFFFF; --border: #FBCFE8;
+            --primary: #DB2777; --primary-glow: rgba(219, 39, 119, 0.15);
+            --secondary: #0EA5E9; --accent: #FBBF24;
+            --text-main: #831843; --text-muted: #9D174D;
+        }
+        body.theme-undersea {
+            --bg: #E0F2FE; --surface: #FFFFFF; --border: #7DD3FC;
+            --primary: #0284C7; --primary-glow: rgba(2, 132, 199, 0.15);
+            --secondary: #F59E0B; --accent: #EC4899;
+            --text-main: #0C4A6E; --text-muted: #0369A1;
+        }
+        body.theme-mystery {
+            --bg: #FEF3C7; --surface: #FFFFFF; --border: #F59E0B;
+            --primary: #065F46; --primary-glow: rgba(6, 95, 70, 0.15);
+            --secondary: #D97706; --accent: #0284C7;
+            --text-main: #451A03; --text-muted: #78350F;
+        }
+
+        /* 15 NEW THEMES */
+        body.theme-assassin {
+            --bg: #0A0A0A; --surface: #1A1A1A; --border: #4C1D95;
+            --primary: #8B5CF6; --primary-glow: rgba(139, 92, 246, 0.2);
+            --secondary: #F43F5E; --accent: #34D399; --text-main: #F1F5F9; --text-muted: #94A3B8;
+        }
+        body.theme-mage {
+            --bg: #172554; --surface: #1E3A8A; --border: #3B82F6;
+            --primary: #60A5FA; --primary-glow: rgba(96, 165, 250, 0.2);
+            --secondary: #C084FC; --accent: #FDE047; --text-main: #EFF6FF; --text-muted: #BFDBFE;
+        }
+        body.theme-marksman {
+            --bg: #451A03; --surface: #78350F; --border: #D97706;
+            --primary: #FBBF24; --primary-glow: rgba(251, 191, 36, 0.2);
+            --secondary: #EF4444; --accent: #F87171; --text-main: #FFFBEB; --text-muted: #FDE68A;
+        }
+        body.theme-hollow { /* Bleach */
+            --bg: #FFFFFF; --surface: #F8FAFC; --border: #E2E8F0;
+            --primary: #DC2626; --primary-glow: rgba(220, 38, 38, 0.15);
+            --secondary: #000000; --accent: #991B1B; --text-main: #000000; --text-muted: #64748B;
+        }
+        body.theme-alchemy { /* FMA */
+            --bg: #7F1D1D; --surface: #991B1B; --border: #DC2626;
+            --primary: #FCD34D; --primary-glow: rgba(252, 211, 77, 0.2);
+            --secondary: #1E293B; --accent: #F59E0B; --text-main: #FEF3C7; --text-muted: #FDE68A;
+        }
+        body.theme-hero { /* OPM */
+            --bg: #FEF08A; --surface: #FDE047; --border: #FACC15;
+            --primary: #DC2626; --primary-glow: rgba(220, 38, 38, 0.2);
+            --secondary: #FFFFFF; --accent: #B91C1C; --text-main: #7F1D1D; --text-muted: #991B1B;
+        }
+        body.theme-pirate { /* One Piece */
+            --bg: #FEE2E2; --surface: #FECACA; --border: #F87171;
+            --primary: #1E3A8A; --primary-glow: rgba(30, 58, 138, 0.2);
+            --secondary: #B91C1C; --accent: #FACC15; --text-main: #451A03; --text-muted: #78350F;
+        }
+        body.theme-ghoul { /* Tokyo Ghoul */
+            --bg: #000000; --surface: #171717; --border: #52525B;
+            --primary: #991B1B; --primary-glow: rgba(153, 27, 27, 0.2);
+            --secondary: #7E22CE; --accent: #DC2626; --text-main: #FFFFFF; --text-muted: #A1A1AA;
+        }
+        body.theme-jojo { /* Jojo */
+            --bg: #FDF4FF; --surface: #FAE8FF; --border: #F0ABFC;
+            --primary: #D946EF; --primary-glow: rgba(217, 70, 239, 0.2);
+            --secondary: #FACC15; --accent: #06B6D4; --text-main: #4A044E; --text-muted: #86198F;
+        }
+        body.theme-hunter { /* HxH */
+            --bg: #ECFDF5; --surface: #D1FAE5; --border: #6EE7B7;
+            --primary: #059669; --primary-glow: rgba(5, 150, 105, 0.2);
+            --secondary: #475569; --accent: #DC2626; --text-main: #064E3B; --text-muted: #047857;
+        }
+        body.theme-crystal { /* Steven U */
+            --bg: #FCE7F3; --surface: #FBCFE8; --border: #F472B6;
+            --primary: #DB2777; --primary-glow: rgba(219, 39, 119, 0.2);
+            --secondary: #60A5FA; --accent: #FBBF24; --text-main: #831843; --text-muted: #9D174D;
+        }
+        body.theme-ghost2 { /* Danny Phantom */
+            --bg: #022C22; --surface: #064E3B; --border: #059669;
+            --primary: #34D399; --primary-glow: rgba(52, 211, 153, 0.2);
+            --secondary: #A7F3D0; --accent: #F87171; --text-main: #ECFDF5; --text-muted: #A7F3D0;
+        }
+        body.theme-space { /* Rick & Morty */
+            --bg: #0B0F19; --surface: #111827; --border: #374151;
+            --primary: #10B981; --primary-glow: rgba(16, 185, 129, 0.2);
+            --secondary: #60A5FA; --accent: #8B5CF6; --text-main: #F9FAFB; --text-muted: #9CA3AF;
+        }
+        body.theme-bender { /* Avatar */
+            --bg: #FFFBEB; --surface: #FEF3C7; --border: #FDE047;
+            --primary: #B45309; --primary-glow: rgba(180, 83, 9, 0.2);
+            --secondary: #0284C7; --accent: #DC2626; --text-main: #78350F; --text-muted: #92400E;
+        }
+        body.theme-vampire { /* Marceline */
+            --bg: #1C1917; --surface: #27272A; --border: #52525B;
+            --primary: #BE185D; --primary-glow: rgba(190, 24, 93, 0.2);
+            --secondary: #93C5FD; --accent: #E11D48; --text-main: #FDF4FF; --text-muted: #E879F9;
+        }
+
+        /* CUSTOM THEME (Set via Javascript inline styles) */
+        body.theme-custom {
+            /* Fallback in case inline fails */
+            --bg: #FFFFFF; --surface: #F9FAFB; --border: #E5E7EB;
+            --primary: #000000; --secondary: #10B981; --text-main: #111827; --text-muted: #6B7280;
+        }
+
+        /* ================= BASE STRUCTURE ================= */
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
         
+        body { 
+            background: var(--bg); color: var(--text-main); overflow-x: hidden; min-height: 100vh; 
+            transition: background 0.4s ease, color 0.4s ease; 
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; 
+        }
+        input, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.4s ease;
+        }
+        .loading-logo { width: 80px; height: 80px; animation: pulse 1.2s infinite ease-in-out; margin-bottom: 20px; }
+        @keyframes pulse { 
+            0% { transform: scale(0.9); opacity: 0.8; } 
+            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px var(--secondary)); } 
+            100% { transform: scale(0.9); opacity: 0.8; } 
+        }
+        .loading-text { font-size: 14px; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; animation: pulse 1.2s infinite ease-in-out; }
+
         /* Header */
         header { 
-            background: var(--surface); padding: 15px 20px; 
+            background: rgba(255, 255, 255, 0.85); padding: 15px 20px; 
             display: flex; align-items: center; position: sticky; top: 0; z-index: 50; 
-            border-bottom: 3px solid var(--border); box-shadow: 0 2px 0px var(--border);
+            border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
-        .logo-svg { width: 36px; height: 36px; margin-right: 12px; }
-        .brand-text h1 { font-size: 22px; font-weight: 900; color: var(--text-main); letter-spacing: -1px; text-transform: uppercase; margin-bottom: -2px; }
-        .brand-text p { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 0.5px; }
+        /* Make header transparent black on dark themes */
+        body.theme-midnight header, body.theme-abyssal header, body.theme-venom header, 
+        body.theme-neotokyo header, body.theme-dark header, body.theme-assassin header,
+        body.theme-mage header, body.theme-ghoul header, body.theme-ghost2 header,
+        body.theme-space header, body.theme-vampire header { 
+            background: rgba(30, 41, 59, 0.85); 
+        }
+        
+        .logo-svg { width: 38px; height: 38px; margin-right: 12px; }
+        .brand-text h1 { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .brand-text p { font-size: 10px; color: var(--primary); font-weight: 700; letter-spacing: 0.5px; text-transform: lowercase; }
         
         #app { padding: 20px; padding-bottom: 110px; min-height: calc(100vh - 80px); }
         
         .view { display: none; }
-        .view.active { display: block; animation: slideUp 0.3s ease-out forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 26px; margin-bottom: 20px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; border-bottom: 4px solid var(--border); display: inline-block; padding-bottom: 4px; }
-        h3 { font-size: 16px; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+        h2 { font-size: 24px; margin-bottom: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
+        h3 { font-size: 14px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
         
-        /* Brutalist Cards */
         .card { 
-            background: var(--surface); border: 3px solid var(--border); border-radius: 8px; 
-            padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow); transition: var(--transition); 
+            background: var(--surface); border: 1px solid var(--border); border-radius: 20px; 
+            padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); transition: var(--transition); 
         }
         
         .flex-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
         
         /* Forms */
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         input, select { 
-            width: 100%; padding: 14px; border-radius: 6px; border: 3px solid var(--border); 
-            background: var(--bg); color: var(--text-main); font-size: 16px; font-weight: 700;
-            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.05); transition: var(--transition); appearance: none;
+            width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--bg); color: var(--text-main); font-size: 16px; font-weight: 600;
+            transition: var(--transition); appearance: none; outline: none;
         }
-        input:focus, select:focus { outline: none; background: #FFF; border-color: var(--primary); box-shadow: 4px 4px 0px var(--border); transform: translate(-2px, -2px); }
+        /* Custom Color Pickers */
+        input[type="color"] { padding: 4px; height: 50px; cursor: pointer; }
+        
+        input:focus, select:focus { background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
         
         /* Buttons */
         button { 
-            width: 100%; padding: 16px; border-radius: 6px; border: 3px solid var(--border); 
-            font-size: 16px; font-weight: 900; cursor: pointer; transition: var(--transition); 
-            text-transform: uppercase; box-shadow: var(--shadow); color: #000; letter-spacing: 0.5px;
+            width: 100%; padding: 16px; border-radius: 14px; border: none; 
+            font-size: 16px; font-weight: 700; cursor: pointer; transition: var(--transition); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); letter-spacing: 0.3px;
         }
-        button:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--border); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: var(--secondary); }
-        .btn-accent { background: var(--accent); color: white;}
+        button:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-secondary { background: var(--secondary); color: #000; }
+        .btn-accent { background: var(--accent); color: #000; }
+        .btn-alert { background: var(--alert); color: white; }
         
         /* Lists */
-        .list-item { display: flex; flex-direction: column; padding: 16px 0; border-bottom: 3px dashed var(--border); }
+        .list-item { display: flex; flex-direction: column; padding: 16px 0; border-bottom: 1px solid var(--border); }
         .list-item:first-child { padding-top: 0; }
         .list-item:last-child { border-bottom: none; padding-bottom: 0; }
         .item-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; }
-        .item-info strong { display: block; font-size: 18px; font-weight: 900; margin-bottom: 4px; text-transform: uppercase; }
-        .item-info span { font-size: 11px; font-weight: 800; background: var(--border); color: var(--surface); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
-        .item-value { font-weight: 900; font-size: 18px; }
+        .item-info strong { display: block; font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
+        .item-info span { font-size: 12px; font-weight: 600; color: var(--text-muted); background: var(--bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); }
+        .item-value { font-weight: 800; font-size: 16px; }
 
         /* Highlight Boxes */
         .box-highlight { 
-            background: var(--primary); color: white; padding: 24px; border-radius: 8px; 
-            text-align: center; margin-bottom: 24px; border: 3px solid var(--border); box-shadow: var(--shadow); 
+            background: linear-gradient(135deg, var(--primary) 0%, #1A1A1A 100%); 
+            color: white; padding: 24px; border-radius: 20px; 
+            text-align: center; margin-bottom: 24px; box-shadow: 0 10px 30px var(--primary-glow); 
+            position: relative; overflow: hidden;
         }
-        .box-highlight .title { font-size: 14px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; }
-        .box-highlight .amount { font-size: 42px; font-weight: 900; letter-spacing: -2px; text-shadow: 3px 3px 0px #000; }
+        .box-highlight::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .box-highlight .title { font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.9; }
+        .box-highlight .amount { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+
+        /* Profile & Avatar */
+        .avatar-wrap { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; color: white; font-size: 32px; font-weight: 800; cursor: pointer; position: relative; overflow: hidden; border: 3px solid var(--secondary); box-shadow: 0 4px 15px var(--primary-glow); }
+        .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-wrap::after { content: '+'; position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); width: 100%; font-size: 12px; text-align: center; padding: 2px 0; }
         
         /* Navigation */
         nav { 
-            position: fixed; bottom: 0; width: 100%; background: var(--surface); border-top: 4px solid var(--border); 
-            display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 50; 
+            position: fixed; bottom: 0; width: 100%; background: rgba(255, 255, 255, 0.9); 
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around; 
+            padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 50; 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
+        body.theme-midnight nav, body.theme-abyssal nav, body.theme-venom nav, 
+        body.theme-neotokyo nav, body.theme-dark nav, body.theme-assassin nav,
+        body.theme-mage nav, body.theme-ghoul nav, body.theme-ghost2 nav,
+        body.theme-space nav, body.theme-vampire nav { 
+            background: rgba(30, 41, 59, 0.9); 
+        }
+
         .nav-item { 
             display: flex; flex-direction: column; align-items: center; color: var(--text-muted); 
-            font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; 
-            width: 20%; padding: 8px 0; border-radius: 6px; transition: var(--transition); border: 3px solid transparent;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; 
+            width: 20%; padding: 8px 0; border-radius: 12px; transition: var(--transition);
         }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; fill: currentColor; transition: var(--transition); }
-        .nav-item.active { color: #000; background: var(--secondary); border: 3px solid var(--border); box-shadow: 2px 2px 0px var(--border); transform: translateY(-3px); }
+        .nav-item.active { color: var(--primary); background: var(--primary-glow); }
+        
+        /* Active nav color fix for dark themes */
+        body.theme-midnight .nav-item.active, body.theme-abyssal .nav-item.active, 
+        body.theme-venom .nav-item.active, body.theme-neotokyo .nav-item.active, 
+        body.theme-dark .nav-item.active, body.theme-assassin .nav-item.active, 
+        body.theme-mage .nav-item.active, body.theme-ghoul .nav-item.active, 
+        body.theme-ghost2 .nav-item.active, body.theme-space .nav-item.active, 
+        body.theme-vampire .nav-item.active { 
+            color: var(--secondary); 
+        }
+        .nav-item.active svg { transform: translateY(-2px); }
 
+        .alert { padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; font-weight: 600; display: none; }
+        .alert.error { background: rgba(255, 59, 48, 0.1); color: var(--alert); border: 1px solid rgba(255, 59, 48, 0.3); display: block; }
+        
         .hidden { display: none !important; }
-        .mini-btn { width: auto; padding: 8px 14px; font-size: 12px; border-radius: 4px; box-shadow: 2px 2px 0px var(--border); }
-        .mini-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--border); }
+        .mini-btn { width: auto; padding: 6px 12px; font-size: 12px; border-radius: 8px; font-weight: 700; background: var(--bg); color: var(--alert); border: 1px solid var(--border); box-shadow: none; }
+        
+        .text-pos { color: #10B981; } /* Green for positive */
+        .text-neg { color: var(--alert); } /* Red for negative */
     </style>
 </head>
-<body>
+<body class="theme-default">
+
+    <div id="loading-screen">
+        <svg class="loading-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#2EE6A6" stroke-width="4" stroke-dasharray="10 5"/>
+            <path d="M35,65 Q50,85 65,65 L60,50 Q50,40 40,50 Z" fill="#FFC857" opacity="0.9"/>
+            <circle cx="50" cy="50" r="15" fill="#2E2A8C"/>
+            <circle cx="20" cy="50" r="6" fill="#2EE6A6"/>
+            <circle cx="80" cy="50" r="6" fill="#2EE6A6"/>
+            <circle cx="50" cy="20" r="6" fill="#2EE6A6"/>
+        </svg>
+        <div class="loading-text" id="loading-msg">Starting up...</div>
+    </div>
 
     <header id="main-header" style="display: none;">
         <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="10" width="80" height="80" fill="#00FF66" stroke="#111111" stroke-width="6" rx="8"/>
-            <path d="M30,70 L45,30 L70,50 Z" fill="#4B0082" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>
-            <circle cx="70" cy="30" r="12" fill="#FF5E00" stroke="#111111" stroke-width="6"/>
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#2EE6A6" stroke-width="4" stroke-dasharray="10 5"/>
+            <path d="M35,65 Q50,85 65,65 L60,50 Q50,40 40,50 Z" fill="#FFC857" opacity="0.9"/>
+            <circle cx="50" cy="50" r="15" fill="#2E2A8C"/>
+            <circle cx="20" cy="50" r="6" fill="#2EE6A6"/>
+            <circle cx="80" cy="50" r="6" fill="#2EE6A6"/>
+            <circle cx="50" cy="20" r="6" fill="#2EE6A6"/>
         </svg>
         <div class="brand-text">
             <h1>Grasp</h1>
@@ -124,30 +392,54 @@
 
     <nav id="bottom-nav" style="display: none;">
         <div class="nav-item active" onclick="navigate('dashboard')">
-            <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Home
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
         </div>
         <div class="nav-item" onclick="navigate('allowance')">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Income
+            <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>Income
         </div>
         <div class="nav-item" onclick="navigate('fields')">
-            <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM11 7h2v2h-2zM7 7h2v2H7zm8 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Fields
+            <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM11 7h2v2h-2zM7 7h2v2H7zm8 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Budgets
         </div>
         <div class="nav-item" onclick="navigate('expenses')">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>Record
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>Record
         </div>
-        <div class="nav-item" onclick="navigate('settings')">
-            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.06.62-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Set
+        <div class="nav-item" onclick="navigate('profile')">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profile
         </div>
     </nav>
 
 <script>
-/** PWA Setup & The Missing SVG Logo */
-const SVG_LOGO = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="80" height="80" fill="#00FF66" stroke="#111111" stroke-width="6" rx="8"/><path d="M30,70 L45,30 L70,50 Z" fill="#4B0082" stroke="#111111" stroke-width="6" stroke-linejoin="round"/><circle cx="70" cy="30" r="12" fill="#FF5E00" stroke="#111111" stroke-width="6"/></svg>`;
+/** SECURITY SCRIPT: Disable Inspect Element / F12 / Right Click */
+document.addEventListener('contextmenu', event => event.preventDefault());
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); document.body.style.display = 'none'; alert("Security block triggered."); }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) { e.preventDefault(); document.body.style.display = 'none'; alert("Security block triggered."); }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) { e.preventDefault(); document.body.style.display = 'none'; alert("Security block triggered."); }
+    if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) { e.preventDefault(); document.body.style.display = 'none'; alert("Security block triggered."); }
+});
+
+/** APP VERSION CONTROL - LOCKED AT 8.0 TO KEEP DATA SAFE */
+const SYSTEM_VERSION = '8.0'; 
+
+/** PWA Setup */
+const SVG_LOGO = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="%232EE6A6" stroke-width="4" stroke-dasharray="10 5"/><path d="M35,65 Q50,85 65,65 L60,50 Q50,40 40,50 Z" fill="%23FFC857" opacity="0.9"/><circle cx="50" cy="50" r="15" fill="%232E2A8C"/><circle cx="20" cy="50" r="6" fill="%232EE6A6"/><circle cx="80" cy="50" r="6" fill="%232EE6A6"/><circle cx="50" cy="20" r="6" fill="%232EE6A6"/></svg>`;
 const manifest = { 
-    name: "Grasp", short_name: "Grasp", display: "standalone", background_color: "#E8E6DF", theme_color: "#4B0082",
+    name: "Grasp", short_name: "Grasp", display: "standalone", background_color: "#F4F6F8", theme_color: "#2E2A8C",
     icons: [{ src: 'data:image/svg+xml;utf8,' + SVG_LOGO, sizes: '192x192 512x512', type: 'image/svg+xml' }]
 };
 document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'}))}">`);
+
+if ('serviceWorker' in navigator) {
+    const swCode = `
+        const CACHE_NAME = 'grasp-v${SYSTEM_VERSION}';
+        self.addEventListener('install', e => { self.skipWaiting(); });
+        self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
+        self.addEventListener('fetch', e => {
+            if(e.request.url.includes('jsonbin') || e.request.url.includes('cloudinary')) return; 
+            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+        });`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(()=>{});
+}
 
 /** Database & State Management */
 let appState = {
@@ -158,13 +450,20 @@ let appState = {
 };
 
 function initLocalDB() {
-    const localUsers = localStorage.getItem('grasp_users_v3');
+    const currentVer = localStorage.getItem('grasp_sys_version');
+    if (currentVer !== SYSTEM_VERSION) {
+        localStorage.removeItem('grasp_current_v8');
+        localStorage.setItem('grasp_sys_version', SYSTEM_VERSION);
+    }
+
+    const localUsers = localStorage.getItem('grasp_users_v8'); 
     if (localUsers) appState.users = JSON.parse(localUsers);
     
-    const loggedIn = localStorage.getItem('grasp_current_v3');
+    const loggedIn = localStorage.getItem('grasp_current_v8'); 
     if (loggedIn) appState.currentUser = JSON.parse(loggedIn);
 }
 
+// Invisible Cloud Sync
 async function syncCloudDB() {
     try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${appState.binId}`, { headers: { 'X-Master-Key': appState.apiKey }});
@@ -186,14 +485,14 @@ async function saveDB() {
         const idx = appState.users.findIndex(u => u.username === appState.currentUser.username);
         if (idx > -1) appState.users[idx] = appState.currentUser;
         else appState.users.push(appState.currentUser);
-        localStorage.setItem('grasp_current_v3', JSON.stringify(appState.currentUser));
+        localStorage.setItem('grasp_current_v8', JSON.stringify(appState.currentUser));
     }
-    localStorage.setItem('grasp_users_v3', JSON.stringify(appState.users));
+    localStorage.setItem('grasp_users_v8', JSON.stringify(appState.users));
     
     renderCurrentView();
 
     try {
-        await fetch(`https://api.jsonbin.io/v3/b/${appState.binId}`, { 
+        fetch(`https://api.jsonbin.io/v3/b/${appState.binId}`, { 
             method: 'PUT', headers: { 'X-Master-Key': appState.apiKey, 'Content-Type': 'application/json' }, 
             body: JSON.stringify({ users: appState.users }) 
         });
@@ -202,6 +501,15 @@ async function saveDB() {
 
 const $ = id => document.getElementById(id);
 const formatMoney = num => '₱' + parseFloat(num).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+// Global Logger
+function logTransaction(title, amount, type) {
+    if(!appState.currentUser) return;
+    appState.currentUser.transactionLog = appState.currentUser.transactionLog || [];
+    appState.currentUser.transactionLog.unshift({
+        title, amount: parseFloat(amount), type, date: new Date().toLocaleString()
+    });
+}
 
 /** Core Mathematical Engine */
 function getDays(freqStr, customDays) {
@@ -223,23 +531,21 @@ function runEngine() {
     const alw = u.allowance;
     const alwDays = getDays(alw.frequency, alw.customDays);
     
-    // 1. Calculate Total Cycle Income (Base + Additional)
     let cycleIncome = parseFloat(alw.amount);
     let extraIncomeBreakdown = [];
     
     (u.additionalIncomes || []).forEach(inc => {
         let cycleBoost = 0;
         if (inc.type === 'onetime') {
-            cycleBoost = parseFloat(inc.amount); // flat add
+            cycleBoost = parseFloat(inc.amount);
         } else {
             const incDays = getDays(inc.frequency, inc.customDays);
-            cycleBoost = parseFloat(inc.amount) * (alwDays / incDays); // prorated add
+            cycleBoost = parseFloat(inc.amount) * (alwDays / incDays);
         }
         cycleIncome += cycleBoost;
         extraIncomeBreakdown.push({ ...inc, cycleBoost });
     });
 
-    // 2. Calculate Required Field Allocations
     let cycleAllocated = 0;
     const fieldsBreakdown = [];
     
@@ -250,7 +556,6 @@ function runEngine() {
         fieldsBreakdown.push({ ...f, deductPerCycle });
     });
 
-    // 3. Engine Output
     const cycleDisposable = cycleIncome - cycleAllocated;
     const dailyGuide = cycleDisposable > 0 ? (cycleDisposable / alwDays) : 0;
     
@@ -261,6 +566,30 @@ function runEngine() {
         cycleIncome, alwDays, cycleAllocated, cycleDisposable, 
         dailyGuide, fieldsBreakdown, extraIncomeBreakdown, currentTotalExp 
     };
+}
+
+/** Theme Applying Function */
+function applyThemeToBody() {
+    const u = appState.currentUser;
+    if (!u) {
+        document.body.className = 'theme-default';
+        document.body.removeAttribute('style');
+        return;
+    }
+    
+    document.body.className = u.theme || 'theme-default';
+    
+    // Apply custom colors if custom theme is selected
+    if (u.theme === 'theme-custom' && u.customColors) {
+        document.body.style.setProperty('--bg', u.customColors.bg);
+        document.body.style.setProperty('--surface', u.customColors.surface);
+        document.body.style.setProperty('--primary', u.customColors.primary);
+        document.body.style.setProperty('--secondary', u.customColors.secondary);
+        document.body.style.setProperty('--text-main', u.customColors.text);
+        document.body.style.setProperty('--border', u.customColors.text); // contrast match
+    } else {
+        document.body.removeAttribute('style');
+    }
 }
 
 /** Routing System */
@@ -278,6 +607,8 @@ function renderCurrentView() {
     $('main-header').style.display = appState.currentUser ? 'flex' : 'none';
     $('bottom-nav').style.display = appState.currentUser ? 'flex' : 'none';
 
+    applyThemeToBody();
+
     let html = '';
     switch(currentView) {
         case 'auth': html = viewAuth(); break;
@@ -285,14 +616,14 @@ function renderCurrentView() {
         case 'allowance': html = viewAllowance(); break;
         case 'fields': html = viewFields(); break;
         case 'expenses': html = viewExpenses(); break;
-        case 'settings': html = viewSettings(); break;
+        case 'profile': html = viewProfile(); break;
     }
     app.innerHTML = `<div class="view active">${html}</div>`;
 }
 
 function renderFreqSelect(idPrefix, defaultFreq, defaultCustom) {
     return `
-        <div class="form-group"><label>Frequency</label>
+        <div class="form-group"><label>How Often?</label>
             <select id="${idPrefix}Freq" onchange="document.getElementById('${idPrefix}CustomGrp').classList.toggle('hidden', this.value !== 'custom')">
                 <option value="daily" ${defaultFreq==='daily'?'selected':''}>Daily</option>
                 <option value="weekly" ${defaultFreq==='weekly'?'selected':''}>Weekly</option>
@@ -314,24 +645,24 @@ function viewAuth() {
     return `
         <div style="text-align:center; margin-top: 40px; margin-bottom: 30px;">
             ${SVG_LOGO.replace('viewBox', 'width="100" height="100" viewBox')}
-            <h2 style="margin-top: 15px; font-size:32px; border:none; margin-bottom: 5px;">GRASP</h2>
-            <p style="color:var(--text-main); font-weight:800; font-size:12px; background:var(--secondary); display:inline-block; padding:4px 10px; border: 2px solid var(--border);">FINANCE ENGINE</p>
+            <h2 style="margin-top: 15px; font-size:28px; margin-bottom: 5px;">Grasp</h2>
+            <p style="color:var(--primary); font-weight:700; font-size:11px; letter-spacing:1px; text-transform:uppercase;">Finance Engine</p>
         </div>
         
         <div class="card" id="loginForm">
-            <h3>System Login</h3>
+            <h3>Welcome Back</h3>
             <div class="form-group"><label>Username</label><input type="text" id="lUser"></div>
             <div class="form-group"><label>Password</label><input type="password" id="lPass"></div>
-            <button class="btn-primary" onclick="login()">Login</button>
-            <p style="text-align:center; margin-top:20px; font-size:14px; font-weight:800; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('loginForm').style.display='none';document.getElementById('regForm').style.display='block';">Create New Account</p>
+            <button class="btn-primary" onclick="login()">Log In to Grasp</button>
+            <p style="text-align:center; margin-top:20px; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-muted);" onclick="document.getElementById('loginForm').style.display='none';document.getElementById('regForm').style.display='block';">Don't have an account? <span style="color:var(--primary);">Register</span></p>
         </div>
 
         <div class="card" id="regForm" style="display:none; border-color:var(--primary);">
-            <h3 style="color:var(--primary);">Register Profile</h3>
-            <div class="form-group"><label>Create Username</label><input type="text" id="rUser"></div>
-            <div class="form-group"><label>Create Password</label><input type="password" id="rPass"></div>
-            <button class="btn-secondary" onclick="register()">Register & Enter</button>
-            <p style="text-align:center; margin-top:20px; font-size:14px; font-weight:800; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('regForm').style.display='none';document.getElementById('loginForm').style.display='block';">Back to Login</p>
+            <h3 style="color:var(--primary);">Create an Account</h3>
+            <div class="form-group"><label>Choose a Username</label><input type="text" id="rUser"></div>
+            <div class="form-group"><label>Create a Password</label><input type="password" id="rPass"></div>
+            <button class="btn-secondary" onclick="register()">Create Profile</button>
+            <p style="text-align:center; margin-top:20px; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-muted);" onclick="document.getElementById('regForm').style.display='none';document.getElementById('loginForm').style.display='block';">Already have an account? <span style="color:var(--primary);">Log In</span></p>
         </div>
     `;
 }
@@ -347,50 +678,46 @@ function viewDashboard() {
     `;
 
     const isOver = engine.currentTotalExp > engine.cycleIncome;
-    const statCol = isOver ? 'var(--alert)' : 'var(--secondary)';
-    const textCol = isOver ? '#fff' : '#000';
+    const statCol = isOver ? 'var(--alert)' : 'var(--surface)';
+    const textCol = isOver ? '#fff' : 'var(--text-main)';
 
-    // Savings History Output
-    const u = appState.currentUser;
-    const historyList = (u.savingsHistory || []).slice(-5).reverse().map(h => `
-        <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center; padding:10px 0;">
-            <div class="item-info"><strong>${h.date}</strong><span>Budget: ${formatMoney(h.budget)}</span></div>
-            <div class="item-value" style="color: ${h.saved >= 0 ? 'var(--secondary)' : 'var(--alert)'}">${h.saved >= 0 ? '+' : ''}${formatMoney(h.saved)}</div>
-        </div>
-    `).join('');
+    let warningHtml = '';
+    if (engine.cycleDisposable < 0) {
+        warningHtml = `
+            <div class="alert error">
+                ⚠️ <strong>Budget Warning:</strong> Your planned budgets (${formatMoney(engine.cycleAllocated)}) exceed your cycle income (${formatMoney(engine.cycleIncome)}). 
+                Please lower your budget amounts to maintain a safe daily spending guide.
+            </div>
+        `;
+    }
 
     return `
+        ${warningHtml}
         <div class="box-highlight">
             <div class="title">Safe Daily Limit</div>
             <div class="amount">${formatMoney(engine.dailyGuide)}</div>
-            <div style="font-size:12px; margin-top:8px; font-weight:800; background:rgba(0,0,0,0.2); display:inline-block; padding:4px 10px; border-radius:4px;">Income divided by ${Math.round(engine.alwDays)} days</div>
+            <div style="font-size:12px; margin-top:8px; font-weight:800; background:rgba(0,0,0,0.2); display:inline-block; padding:4px 10px; border-radius:4px;">Based on your ${Math.round(engine.alwDays)} day cycle</div>
         </div>
 
         <div class="flex-row">
-            <div class="card" style="width: 47%; margin-bottom:0; padding:16px;">
-                <div style="font-size:11px; font-weight:900; text-transform:uppercase;">Cycle Budget</div>
+            <div class="card" style="width: 48%; margin-bottom:0; padding:18px;">
+                <div style="font-size:11px; font-weight:900; text-transform:uppercase;">Cycle Income</div>
                 <div style="font-size:18px; font-weight:900; color:var(--primary); margin-top:5px;">${formatMoney(engine.cycleIncome)}</div>
             </div>
-            <div class="card" style="width: 47%; margin-bottom:0; padding:16px; background:${statCol}; border-color:var(--border);">
-                <div style="font-size:11px; font-weight:900; text-transform:uppercase; color:${textCol};">Cycle Spent</div>
+            <div class="card" style="width: 48%; margin-bottom:0; padding:18px; background:${statCol}; border-color:${isOver ? 'transparent' : 'var(--border)'};">
+                <div style="font-size:11px; font-weight:900; text-transform:uppercase; color:${isOver ? '#fff' : 'var(--text-muted)'};">Cycle Spent</div>
                 <div style="font-size:18px; font-weight:900; color:${textCol}; margin-top:5px;">${formatMoney(engine.currentTotalExp)}</div>
             </div>
         </div>
 
-        <div class="card" style="margin-top:24px; background:var(--text-main); color:var(--surface);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3 style="margin-bottom:4px; color:var(--surface);">Total Savings</h3>
-                    <div style="font-size:26px; font-weight:900; color:var(--secondary);">${formatMoney(appState.currentUser.savings || 0)}</div>
-                </div>
-                <button class="btn-accent" style="width:auto; padding:12px 20px; font-size:14px; border-color:#FFF;" onclick="settleCycle()">Settle Cycle</button>
+        <div class="card" style="margin-top:20px; background:var(--text-main); color:var(--surface); border:none;">
+            <h3 style="margin-bottom:10px; color:var(--bg);">Total Vault Savings</h3>
+            <div style="font-size:32px; font-weight:900; color:var(--secondary); margin-bottom:15px;">${formatMoney(appState.currentUser.savings || 0)}</div>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" style="flex:1; padding:12px; font-size:13px; box-shadow:none; background: rgba(255,255,255,0.15);" onclick="quickStash()">+ Quick Stash</button>
+                <button class="btn-secondary" style="flex:1; padding:12px; font-size:13px; box-shadow:none;" onclick="settleCycle()">End Cycle & Save</button>
             </div>
-            <p style="font-size:11px; margin-top:12px; font-weight:600; color:#AAA;">Settling calculates expenses, pushes difference to savings, and logs history.</p>
-        </div>
-
-        <h3 style="margin-top:20px;">Recent Cycle Logs</h3>
-        <div class="card" style="background:#1A1A1A; color:#FFF;">
-            ${historyList || '<p style="text-align:center; font-weight:800; font-size:12px; color:#888;">NO CYCLES SETTLED YET.</p>'}
         </div>
     `;
 }
@@ -399,89 +726,87 @@ function viewAllowance() {
     const u = appState.currentUser;
     const alw = u.allowance || { amount: '', frequency: 'monthly', customDays: '' };
     
-    // Additional Incomes Generator
     const engine = runEngine() || { extraIncomeBreakdown: [] };
     const extraIncList = engine.extraIncomeBreakdown.map((inc, i) => `
         <div class="list-item">
             <div class="item-header">
                 <strong>${inc.name}</strong>
-                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delExtraInc(${i})">DEL</button>
+                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delExtraInc(${i})">Remove</button>
             </div>
-            <div style="font-size:13px; font-weight:800; margin-bottom:5px;">Input: ${formatMoney(inc.amount)} / ${inc.type==='onetime' ? 'One-Time' : inc.frequency}</div>
-            <div style="font-size:13px; background:var(--secondary); color:#000; display:inline-block; padding:4px 8px; border:2px solid var(--border); font-weight:900;">
-                Cycle Boost: +${formatMoney(inc.cycleBoost)}
+            <div style="font-size:12px; font-weight:600; margin-bottom:5px; color:var(--text-muted);">Amount: ${formatMoney(inc.amount)} / ${inc.type==='onetime' ? 'One-Time' : inc.frequency}</div>
+            <div style="font-size:11px; color:var(--primary); font-weight:800; text-transform:uppercase;">
+                Adds to cycle: +${formatMoney(inc.cycleBoost)}
             </div>
         </div>
     `).join('');
 
     return `
-        <h2>Income Streams</h2>
+        <h2>Income Details</h2>
         
         <div class="card" style="border-width:4px;">
-            <h3>Primary Allowance</h3>
-            <p style="font-size:12px; font-weight:700; margin-bottom:15px; color:var(--text-muted);">The engine synchronizes all mathematical deductions against this cycle.</p>
+            <h3>Main Income</h3>
+            <p style="font-size:12px; font-weight:500; margin-bottom:15px; color:var(--text-muted);">This is your primary money source. We base all math on this cycle.</p>
             <div class="form-group"><label>Base Amount</label><input type="number" id="alwAmount" value="${alw.amount}" placeholder="0.00"></div>
             ${renderFreqSelect('alw', alw.frequency, alw.customDays)}
-            <button class="btn-primary" onclick="saveAllowance()">Update Primary</button>
+            <button class="btn-primary" onclick="saveAllowance()">Save Main Income</button>
         </div>
 
         <div class="card" style="background:var(--secondary); border-color:var(--border);">
-            <h3 style="color:#000;">Add Extra Income</h3>
-            <div class="form-group"><label style="color:#000;">Income Source</label><input type="text" id="eiName" placeholder="e.g. Side Hustle, Gift"></div>
+            <h3 style="color:#000;">Add Extra Money</h3>
+            <div class="form-group"><label style="color:#000;">Source Name</label><input type="text" id="eiName" placeholder="e.g. Side Hustle, Gift"></div>
             <div class="form-group"><label style="color:#000;">Amount</label><input type="number" id="eiAmount" placeholder="0.00"></div>
             <div class="form-group"><label style="color:#000;">Type</label>
                 <select id="eiType" onchange="document.getElementById('eiFreqWrap').classList.toggle('hidden', this.value === 'onetime')">
-                    <option value="onetime">One-Time (Current Cycle Only)</option>
-                    <option value="recurring">Recurring</option>
+                    <option value="onetime">One-Time (Just for this cycle)</option>
+                    <option value="recurring">Recurring (Happens regularly)</option>
                 </select>
             </div>
             <div id="eiFreqWrap" class="hidden">
                 ${renderFreqSelect('ei', 'monthly', '')}
             </div>
-            <button class="btn-accent" style="margin-top:10px; border-color:#000;" onclick="addExtraInc()">Inject Income</button>
+            <button class="btn-accent" style="margin-top:10px; border-color:#000;" onclick="addExtraInc()">Save Extra Income</button>
         </div>
 
-        <h3 style="margin-top:20px;">Active Extra Streams</h3>
-        <div class="card">${extraIncList || '<p style="text-align:center; font-weight:800;">NO EXTRA INCOME ADDED.</p>'}</div>
+        <h3 style="margin-top:25px;">Active Extra Income</h3>
+        <div class="card">${extraIncList || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No extra income added.</p>'}</div>
     `;
 }
 
 function viewFields() {
     const engine = runEngine();
-    if(!engine) return `<div style="padding:20px; text-align:center; font-weight:800;">PLEASE SET INCOME FIRST.</div>`;
+    if(!engine) return `<div style="padding:20px; text-align:center; font-weight:700;">Please set up your main income first.</div>`;
     
     let html = engine.fieldsBreakdown.map((f, i) => `
         <div class="list-item">
             <div class="item-header">
                 <strong>${f.name}</strong>
-                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delField(${i})">DEL</button>
+                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delField(${i})">Remove</button>
             </div>
-            <div style="font-size:13px; font-weight:800; margin-bottom:5px;">Target: ${formatMoney(f.amount)} / ${f.frequency==='custom'?f.customDays+' Days':f.frequency}</div>
-            <div style="font-size:13px; background:var(--primary); color:#FFF; display:inline-block; padding:4px 8px; border:2px solid var(--border); font-weight:900;">
-                Engine Pulls: ${formatMoney(f.deductPerCycle)} / Cycle
+            <div style="font-size:12px; font-weight:600; margin-bottom:5px; color:var(--text-muted);">Goal: ${formatMoney(f.amount)} / ${f.frequency==='custom'?f.customDays+' Days':f.frequency}</div>
+            <div style="font-size:11px; color:var(--primary); font-weight:800; text-transform:uppercase;">
+                Takes from cycle: ${formatMoney(f.deductPerCycle)}
             </div>
         </div>
     `).join('');
 
     return `
-        <h2>System Fields</h2>
+        <h2>Budget Categories</h2>
         <div class="card" style="background:var(--primary); color:white;">
-            <h3 style="color:var(--secondary);">Add Expense Field</h3>
-            <div class="form-group"><label style="color:white;">Field Name</label><input type="text" id="fName" placeholder="e.g. Rent, Groceries"></div>
-            <div class="form-group"><label style="color:white;">Required Amount</label><input type="number" id="fAmount" placeholder="0.00"></div>
+            <h3 style="color:var(--secondary);">Add a New Budget</h3>
+            <div class="form-group"><label style="color:white;">Category Name</label><input type="text" id="fName" placeholder="e.g. Rent, Groceries"></div>
+            <div class="form-group"><label style="color:white;">Planned Amount</label><input type="number" id="fAmount" placeholder="0.00"></div>
             ${renderFreqSelect('f', 'monthly', '')}
-            <button class="btn-secondary" style="margin-top:10px;" onclick="addField()">Inject Field</button>
+            <button class="btn-secondary" style="margin-top:10px;" onclick="addField()">Save Budget Category</button>
         </div>
         
-        <h3>Allocations Breakdown</h3>
-        <p style="font-size:13px; font-weight:700; margin-bottom:15px; color:var(--text-muted);">Calculated burdens deducted from your income cycle.</p>
-        <div class="card">${html || '<p style="text-align:center; font-weight:800;">NO FIELDS ACTIVE.</p>'}</div>
+        <h3 style="margin-top:25px;">Current Budgets</h3>
+        <div class="card">${html || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No budgets active.</p>'}</div>
     `;
 }
 
 function viewExpenses() {
     const u = appState.currentUser;
-    if(!u.allowance || !u.allowance.amount) return `<div style="padding:20px; text-align:center; font-weight:800;">PLEASE SET INCOME FIRST.</div>`;
+    if(!u.allowance || !u.allowance.amount) return `<div style="padding:20px; text-align:center; font-weight:700;">Please set up your main income first.</div>`;
     
     u.fields = u.fields || [];
     u.currentExpenses = u.currentExpenses || [];
@@ -489,59 +814,237 @@ function viewExpenses() {
     let opts = u.fields.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
     
     let list = u.currentExpenses.map((e, i) => {
+        let isVault = e.category === 'Vault Transfer';
         let isUnplanned = e.category === 'Unplanned';
         return `
         <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
             <div class="item-info">
                 <strong>${e.category}</strong>
-                <span style="background:${isUnplanned?'var(--alert)':'var(--primary)'}; border:2px solid var(--border);">${e.date}</span>
+                <span style="background:${isUnplanned?'var(--alert)':'var(--bg)'}; color:${isUnplanned?'white':'var(--text-muted)'}; border:none;">${e.date.split(',')[0]}</span>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <div class="item-value text-neg" style="color:var(--alert)">-${formatMoney(e.amount)}</div>
-                <button class="mini-btn" style="background:var(--bg); border:2px solid var(--border); box-shadow:none; font-size:16px;" onclick="delExp(${i})">✖</button>
+                <div class="item-value text-neg" style="color:${isVault ? 'var(--secondary)' : 'var(--alert)'}">
+                    ${isVault ? '+' : '-'}${formatMoney(e.amount)}
+                </div>
+                <button class="mini-btn" style="padding:4px 8px;" onclick="delExp(${i}, ${isVault}, ${e.amount})">✕</button>
             </div>
         </div>
     `}).join('');
 
     return `
-        <h2>Record Data</h2>
-        <div class="card" style="border: 4px solid var(--accent); background: #FFEBD6;">
-            <div class="form-group"><label>Target Field</label>
+        <h2>Record an Expense</h2>
+        <div class="card" style="border: 4px solid var(--accent);">
+            <div class="form-group"><label>Which category?</label>
                 <select id="eCat">${opts}<option value="Unplanned" selected>Unplanned / Other</option></select>
             </div>
             <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00"></div>
-            <button class="btn-accent" onclick="recordExp()">Log Data</button>
+            <button class="btn-accent" onclick="recordExp()">Save Expense</button>
         </div>
-        <h3 style="margin-top:20px;">Cycle Output Log</h3>
-        <div class="card">${list || '<p style="text-align:center; font-weight:800;">NO DATA LOGGED.</p>'}</div>
+        <h3 style="margin-top:25px;">Recent Spending (This Cycle)</h3>
+        <div class="card">${list || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No expenses logged yet.</p>'}</div>
     `;
 }
 
-function viewSettings() {
+function viewProfile() {
+    const u = appState.currentUser;
+    const avatarContent = u.avatar ? `<img src="${u.avatar}" alt="Profile">` : u.username.charAt(0).toUpperCase();
+    
+    // ======== METRICS DASHBOARD LOGIC ========
+    const now = new Date();
+    let spentThisWeek = 0;
+    let spentThisMonth = 0;
+    let spentAllTime = 0;
+
+    (u.transactionLog || []).forEach(t => {
+        if(t.type === 'expense') {
+            const tDate = new Date(t.date);
+            const amt = parseFloat(t.amount) || 0;
+            spentAllTime += amt;
+
+            if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
+                spentThisMonth += amt;
+            }
+
+            const diffTime = Math.abs(now - tDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays <= 7) {
+                spentThisWeek += amt;
+            }
+        }
+    });
+
+    const ledger = (u.transactionLog || []).map(t => {
+        let color = t.type === 'income' || t.type === 'stash' ? 'var(--secondary)' : 'var(--alert)';
+        let sign = t.type === 'income' || t.type === 'stash' ? '+' : '-';
+        return `
+        <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
+            <div class="item-info"><strong>${t.title}</strong><span style="background:transparent; border:none; padding:0;">${t.date.split(',')[0]}</span></div>
+            <div class="item-value" style="color:${color}">${sign}${formatMoney(t.amount)}</div>
+        </div>
+        `;
+    }).join('');
+
     return `
-        <h2>Settings</h2>
-        <div class="card">
-            <div class="list-item" style="border:none; flex-direction:row; justify-content:space-between; align-items:center;">
-                <div class="item-info"><strong style="margin:0;">System Exit</strong></div>
-                <button onclick="logout()" class="mini-btn" style="background:var(--alert); color:#FFF; width:100px;">LOGOUT</button>
+        <h2>Profile Analytics</h2>
+        
+        <div class="card" style="text-align:center; padding-top:40px;">
+            <label for="avatarUpload" class="avatar-wrap" title="Upload Picture">
+                ${avatarContent}
+            </label>
+            <input type="file" id="avatarUpload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
+            <h3 style="margin-bottom:5px; color:var(--text-main); font-size:20px;">@${u.username}</h3>
+            <p style="font-size:12px; color:var(--text-muted); font-weight:600;" id="avatarLabel">Tap circle to change photo</p>
+            
+            <div style="margin-top:25px; text-align:left;">
+                <div class="form-group">
+                    <label>App Theme Collection</label>
+                    <select onchange="changeTheme(this.value)">
+                        <optgroup label="Standard Modes">
+                            <option value="theme-light" ${u.theme==='theme-light'?'selected':''}>Light Mode</option>
+                            <option value="theme-dark" ${u.theme==='theme-dark'?'selected':''}>Dark Mode</option>
+                            <option value="theme-default" ${u.theme==='theme-default'?'selected':''}>Grasp Modern (Default)</option>
+                            <option value="theme-custom" ${u.theme==='theme-custom'?'selected':''}>✨ Create Custom Theme</option>
+                        </optgroup>
+                        <optgroup label="Modern Classics">
+                            <option value="theme-ocean" ${u.theme==='theme-ocean'?'selected':''}>Ocean Breeze</option>
+                            <option value="theme-forest" ${u.theme==='theme-forest'?'selected':''}>Forest Pine</option>
+                            <option value="theme-sunset" ${u.theme==='theme-sunset'?'selected':''}>Sunset Glow</option>
+                            <option value="theme-midnight" ${u.theme==='theme-midnight'?'selected':''}>Midnight Dark</option>
+                        </optgroup>
+                        <optgroup label="Gaming (MLBB)">
+                            <option value="theme-abyssal" ${u.theme==='theme-abyssal'?'selected':''}>Abyssal Dark</option>
+                            <option value="theme-lightborn" ${u.theme==='theme-lightborn'?'selected':''}>Lightborn</option>
+                            <option value="theme-venom" ${u.theme==='theme-venom'?'selected':''}>Venom Squad</option>
+                            <option value="theme-assassin" ${u.theme==='theme-assassin'?'selected':''}>Shadow Assassin</option>
+                            <option value="theme-mage" ${u.theme==='theme-mage'?'selected':''}>Arcane Mage</option>
+                            <option value="theme-marksman" ${u.theme==='theme-marksman'?'selected':''}>Gold Marksman</option>
+                        </optgroup>
+                        <optgroup label="Anime Collection">
+                            <option value="theme-leaf" ${u.theme==='theme-leaf'?'selected':''}>Hidden Leaf</option>
+                            <option value="theme-warrior" ${u.theme==='theme-warrior'?'selected':''}>Super Warrior</option>
+                            <option value="theme-titan" ${u.theme==='theme-titan'?'selected':''}>Titan Slasher</option>
+                            <option value="theme-neotokyo" ${u.theme==='theme-neotokyo'?'selected':''}>Neo Tokyo</option>
+                            <option value="theme-pirate" ${u.theme==='theme-pirate'?'selected':''}>Pirate King</option>
+                            <option value="theme-hollow" ${u.theme==='theme-hollow'?'selected':''}>Hollow Mask</option>
+                            <option value="theme-alchemy" ${u.theme==='theme-alchemy'?'selected':''}>Full Metal</option>
+                            <option value="theme-hero" ${u.theme==='theme-hero'?'selected':''}>One Punch</option>
+                            <option value="theme-ghoul" ${u.theme==='theme-ghoul'?'selected':''}>Tokyo Ghoul</option>
+                            <option value="theme-jojo" ${u.theme==='theme-jojo'?'selected':''}>Bizarre Adventure</option>
+                            <option value="theme-hunter" ${u.theme==='theme-hunter'?'selected':''}>Hunter License</option>
+                        </optgroup>
+                        <optgroup label="Cartoon Classics">
+                            <option value="theme-candy" ${u.theme==='theme-candy'?'selected':''}>Candy Kingdom</option>
+                            <option value="theme-undersea" ${u.theme==='theme-undersea'?'selected':''}>Under the Sea</option>
+                            <option value="theme-mystery" ${u.theme==='theme-mystery'?'selected':''}>Mystery Pine</option>
+                            <option value="theme-crystal" ${u.theme==='theme-crystal'?'selected':''}>Crystal Gems</option>
+                            <option value="theme-ghost2" ${u.theme==='theme-ghost2'?'selected':''}>Phantom Ghost</option>
+                            <option value="theme-space" ${u.theme==='theme-space'?'selected':''}>Space Portal</option>
+                            <option value="theme-bender" ${u.theme==='theme-bender'?'selected':''}>Air Bender</option>
+                            <option value="theme-vampire" ${u.theme==='theme-vampire'?'selected':''}>Vampire Queen</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <div id="customColorUI" class="${u.theme === 'theme-custom' ? '' : 'hidden'}" style="margin-top: 15px; padding: 15px; border: 2px dashed var(--border); border-radius: 12px;">
+                    <h3 style="margin-bottom: 10px;">Design Your Own Theme</h3>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;"><label>Background</label><input type="color" id="c_bg" value="${u.customColors?.bg || '#F4F6F8'}"></div>
+                        <div style="flex:1;"><label>Card Color</label><input type="color" id="c_surface" value="${u.customColors?.surface || '#FFFFFF'}"></div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;"><label>Primary Accent</label><input type="color" id="c_primary" value="${u.customColors?.primary || '#2E2A8C'}"></div>
+                        <div style="flex:1;"><label>Secondary Acc</label><input type="color" id="c_secondary" value="${u.customColors?.secondary || '#2EE6A6'}"></div>
+                    </div>
+                    <div class="form-group"><label>Text Color</label><input type="color" id="c_text" value="${u.customColors?.text || '#1C1C1E'}"></div>
+                    <button onclick="saveCustomTheme()" class="btn-primary" style="margin-top:5px; padding:10px;">Apply Custom Colors</button>
+                </div>
+                
             </div>
+            <button onclick="logout()" class="btn-alert" style="margin-top:15px;">Log Out</button>
+        </div>
+
+        <h3 style="margin-top:25px;">Spending Overview</h3>
+        <div class="flex-row">
+            <div class="card" style="width: 48%; padding:16px; margin-bottom: 0;">
+                <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">This Week</div>
+                <div style="font-size:18px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentThisWeek)}</div>
+            </div>
+            <div class="card" style="width: 48%; padding:16px; margin-bottom: 0;">
+                <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">This Month</div>
+                <div style="font-size:18px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentThisMonth)}</div>
+            </div>
+        </div>
+        <div class="card" style="padding:16px;">
+            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">All-Time Spent</div>
+            <div style="font-size:24px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentAllTime)}</div>
+        </div>
+
+        <h3 style="margin-top:25px;">Complete Ledger</h3>
+        <div class="card" style="max-height:400px; overflow-y:auto;">
+            ${ledger || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No history yet.</p>'}
         </div>
     `;
 }
 
 /** ACTIONS */
+function changeTheme(themeName) {
+    appState.currentUser.theme = themeName;
+    saveDB();
+}
+
+function saveCustomTheme() {
+    appState.currentUser.customColors = {
+        bg: $('c_bg').value,
+        surface: $('c_surface').value,
+        primary: $('c_primary').value,
+        secondary: $('c_secondary').value,
+        text: $('c_text').value
+    };
+    saveDB();
+}
+
+async function handleAvatarUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const labelMsg = document.getElementById('avatarLabel');
+    const oldMsg = labelMsg.innerText;
+    labelMsg.innerText = 'Uploading photo, please wait...';
+    labelMsg.style.color = 'var(--secondary)';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'grasp_preset');
+
+    try {
+        const res = await fetch('https://api.cloudinary.com/v1_1/dsdy1e1wl/image/upload', {
+            method: 'POST', body: formData
+        });
+        const data = await res.json();
+        if (data.secure_url) {
+            appState.currentUser.avatar = data.secure_url;
+            saveDB();
+        }
+    } catch(e) {
+        alert('Upload failed. Please check your connection.');
+        labelMsg.innerText = oldMsg;
+        labelMsg.style.color = 'var(--text-muted)';
+    }
+}
+
 function login() {
     const u = $('lUser').value.trim();
     const p = $('lPass').value.trim();
-    if (!u || !p) return alert("Please enter Username and Password.");
+    if (!u || !p) return alert("Please enter your username and password.");
     
     const user = appState.users.find(x => x.username === u && x.password === p);
     if(user) { 
         appState.currentUser = user; 
+        if(!appState.currentUser.theme) appState.currentUser.theme = 'theme-default';
         saveDB(); 
         navigate('dashboard'); 
     } else { 
-        alert('Access Denied: Incorrect Username or Password'); 
+        alert('Incorrect username or password. Please try again.'); 
     }
 }
 
@@ -549,11 +1052,12 @@ function register() {
     const u = $('rUser').value.trim();
     const p = $('rPass').value.trim();
     if (!u || !p) return alert("Please enter a Username and Password to register.");
-    if(appState.users.find(x => x.username === u)) return alert('Username already exists. Please choose another.');
+    if(appState.users.find(x => x.username === u)) return alert('Username already taken. Please choose another.');
     
     const newUser = { 
         id: Date.now().toString(), username: u, password: p, allowance: null, 
-        fields: [], additionalIncomes: [], currentExpenses: [], savingsHistory: [], savings: 0 
+        fields: [], additionalIncomes: [], currentExpenses: [], savingsHistory: [], 
+        transactionLog: [], savings: 0, theme: 'theme-default', customColors: null, avatar: '' 
     };
     
     appState.currentUser = newUser;
@@ -563,18 +1067,16 @@ function register() {
 
 function logout() {
     appState.currentUser = null;
-    localStorage.removeItem('grasp_current_v3');
+    localStorage.removeItem('grasp_current_v8');
     navigate('auth');
 }
 
 function saveAllowance() {
     const amt = parseFloat($('alwAmount').value);
-    if (isNaN(amt) || amt <= 0) return alert("Please enter a valid allowance amount.");
+    if (isNaN(amt) || amt <= 0) return alert("Please enter a valid amount.");
     
     appState.currentUser.allowance = { 
-        amount: amt, 
-        frequency: $('alwFreq').value,
-        customDays: $('alwCustom') ? $('alwCustom').value : ''
+        amount: amt, frequency: $('alwFreq').value, customDays: $('alwCustom') ? $('alwCustom').value : ''
     };
     saveDB(); 
     navigate('dashboard');
@@ -587,15 +1089,16 @@ function addExtraInc() {
     const f = $('eiFreq').value;
     const c = $('eiCustom') ? $('eiCustom').value : '';
 
-    if(!n || isNaN(a) || a <= 0) return alert("Please provide a valid Name and Amount.");
+    if(!n || isNaN(a) || a <= 0) return alert("Please provide a name and amount.");
 
     appState.currentUser.additionalIncomes = appState.currentUser.additionalIncomes || [];
     appState.currentUser.additionalIncomes.push({ name: n, amount: a, type: t, frequency: f, customDays: c });
+    logTransaction(`Extra Income: ${n}`, a, 'income');
     saveDB();
 }
 
 function delExtraInc(i) {
-    if(confirm("Delete this extra income stream?")) {
+    if(confirm("Remove this extra income stream?")) {
         appState.currentUser.additionalIncomes.splice(i,1);
         saveDB();
     }
@@ -607,8 +1110,8 @@ function addField() {
     const f = $('fFreq').value;
     const c = $('fCustom') ? $('fCustom').value : '';
     
-    if(!n) return alert("Please enter a Field Name.");
-    if(isNaN(a) || a <= 0) return alert("Please enter a valid Field Amount.");
+    if(!n) return alert("Please enter a Category Name.");
+    if(isNaN(a) || a <= 0) return alert("Please enter a valid Amount.");
     
     appState.currentUser.fields = appState.currentUser.fields || [];
     appState.currentUser.fields.push({ name: n, amount: a, frequency: f, customDays: c });
@@ -616,7 +1119,7 @@ function addField() {
 }
 
 function delField(i) { 
-    if(confirm("Delete this field?")) {
+    if(confirm("Remove this budget category?")) {
         appState.currentUser.fields.splice(i,1); 
         saveDB(); 
     }
@@ -626,57 +1129,90 @@ function recordExp() {
     const c = $('eCat').value;
     const a = parseFloat($('eAmount').value);
     
-    if(isNaN(a) || a <= 0) return alert("Please enter a valid Expense Amount.");
+    if(isNaN(a) || a <= 0) return alert("Please enter a valid amount.");
     
     appState.currentUser.currentExpenses = appState.currentUser.currentExpenses || [];
-    appState.currentUser.currentExpenses.push({ category: c, amount: a, date: new Date().toISOString().split('T')[0] });
+    const dateStr = new Date().toLocaleString();
+    appState.currentUser.currentExpenses.push({ category: c, amount: a, date: dateStr });
+    
+    logTransaction(`Expense: ${c}`, a, 'expense');
     saveDB();
     $('eAmount').value = ''; 
 }
 
-function delExp(i) { 
-    if(confirm("Remove this logged expense?")) {
+function delExp(i, isVault, amount) { 
+    if(confirm("Remove this entry?")) {
         appState.currentUser.currentExpenses.splice(i,1); 
+        if (isVault) {
+            appState.currentUser.savings = Math.max(0, (appState.currentUser.savings || 0) - amount);
+        }
         saveDB(); 
     }
 }
 
+function quickStash() {
+    const rawAmt = prompt("How much would you like to save into your Vault today?\n(This will reduce your current cycle budget.)");
+    if (!rawAmt) return;
+    const amt = parseFloat(rawAmt);
+    if (isNaN(amt) || amt <= 0) return alert("Invalid amount.");
+
+    appState.currentUser.savings = (parseFloat(appState.currentUser.savings) || 0) + amt;
+    appState.currentUser.currentExpenses = appState.currentUser.currentExpenses || [];
+    appState.currentUser.currentExpenses.push({ category: 'Vault Transfer', amount: amt, date: new Date().toLocaleString() });
+    
+    logTransaction('Vault Quick Stash', amt, 'stash');
+    saveDB();
+}
+
 function settleCycle() {
-    if(!confirm("WARNING: Settling will calculate all logged expenses against your cycle budget, log the history, and adjust your total savings. Proceed?")) return;
+    if(!confirm("Are you sure you want to end this cycle? We will calculate your expenses and update your Vault savings.")) return;
     
     const engine = runEngine();
-    const difference = engine.cycleIncome - engine.currentTotalExp;
     
-    // Update Savings
+    let actualExpensesOnly = 0;
+    appState.currentUser.currentExpenses.forEach(e => {
+        if(e.category !== 'Vault Transfer') actualExpensesOnly += parseFloat(e.amount);
+    });
+
+    const difference = engine.cycleIncome - actualExpensesOnly;
     appState.currentUser.savings = (parseFloat(appState.currentUser.savings) || 0) + difference;
     
-    // Log History
     appState.currentUser.savingsHistory = appState.currentUser.savingsHistory || [];
     appState.currentUser.savingsHistory.push({
         date: new Date().toLocaleDateString(),
         budget: engine.cycleIncome,
-        spent: engine.currentTotalExp,
+        spent: actualExpensesOnly, 
         saved: difference
     });
 
-    // Reset Cycle
+    logTransaction('Cycle Settled', difference, difference >= 0 ? 'stash' : 'expense');
+
     appState.currentUser.currentExpenses = []; 
-    // Clear out one-time incomes so they don't roll over to the next cycle
     appState.currentUser.additionalIncomes = (appState.currentUser.additionalIncomes || []).filter(inc => inc.type === 'recurring');
     
     saveDB();
-    alert(`CYCLE SETTLED\n\nBudget: ${formatMoney(engine.cycleIncome)}\nSpent: ${formatMoney(engine.currentTotalExp)}\n\nImpact on Savings: ${difference >= 0 ? '+' : ''}${formatMoney(difference)}`);
+    alert(`CYCLE FINISHED\n\nStarting Budget: ${formatMoney(engine.cycleIncome)}\nTotal Spent: ${formatMoney(actualExpensesOnly)}\n\nImpact on Vault: ${difference >= 0 ? '+' : ''}${formatMoney(difference)}`);
     navigate('dashboard');
 }
 
-/** Initialization */
-window.onload = async () => {
+/** SAFE INITIALIZATION */
+window.onload = () => {
     initLocalDB();
     if(appState.currentUser) navigate('dashboard'); 
     else navigate('auth');
     
-    await syncCloudDB();
-    if(appState.currentUser) renderCurrentView();
+    setTimeout(() => {
+        const loader = document.getElementById('loading-screen');
+        if(loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 400);
+        }
+    }, 600); // Super fast loader drop
+
+    // Background cloud sync completely detached from loading logic
+    syncCloudDB().then(() => {
+        if(appState.currentUser) renderCurrentView();
+    }).catch(e => console.log("Silent cloud sync bypass"));
 };
 </script>
 </body>
