@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Grasp — powered by brenduling</title>
+    <style>
+        /* NEO-BRUTALIST DESIGN SYSTEM */
+        :root {
+            --bg: #E8E6DF;
+            --surface: #FFFFFF;
+            --border: #111111;
+            --primary: #4B0082; /* Deep Indigo */
+            --secondary: #00FF66; /* Neon Green */
+            --accent: #FF5E00; /* Safety Orange */
+            --alert: #FF003C; /* Crisp Red */
+            --text-main: #111111;
+            --text-muted: #555555;
+            --shadow: 4px 4px 0px var(--border);
+            --transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
+        
+        /* Header */
+        header { 
+            background: var(--surface); padding: 15px 20px; 
+            display: flex; align-items: center; position: sticky; top: 0; z-index: 50; 
+            border-bottom: 3px solid var(--border); box-shadow: 0 2px 0px var(--border);
+        }
+        .logo-svg { width: 36px; height: 36px; margin-right: 12px; }
+        .brand-text h1 { font-size: 22px; font-weight: 900; color: var(--text-main); letter-spacing: -1px; text-transform: uppercase; margin-bottom: -2px; }
+        .brand-text p { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 0.5px; }
+        
+        #app { padding: 20px; padding-bottom: 110px; min-height: calc(100vh - 80px); }
+        
+        .view { display: none; }
+        .view.active { display: block; animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { font-size: 26px; margin-bottom: 20px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; border-bottom: 4px solid var(--border); display: inline-block; padding-bottom: 4px; }
+        h3 { font-size: 16px; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+        
+        /* Brutalist Cards */
+        .card { 
+            background: var(--surface); border: 3px solid var(--border); border-radius: 8px; 
+            padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow); transition: var(--transition); 
+        }
+        
+        .flex-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+        
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: var(--text-main); margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
+        input, select { 
+            width: 100%; padding: 14px; border-radius: 6px; border: 3px solid var(--border); 
+            background: var(--bg); color: var(--text-main); font-size: 16px; font-weight: 700;
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.05); transition: var(--transition); appearance: none;
+        }
+        input:focus, select:focus { outline: none; background: #FFF; border-color: var(--primary); box-shadow: 4px 4px 0px var(--border); transform: translate(-2px, -2px); }
+        
+        /* Buttons */
+        button { 
+            width: 100%; padding: 16px; border-radius: 6px; border: 3px solid var(--border); 
+            font-size: 16px; font-weight: 900; cursor: pointer; transition: var(--transition); 
+            text-transform: uppercase; box-shadow: var(--shadow); color: #000; letter-spacing: 0.5px;
+        }
+        button:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--border); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); }
+        .btn-accent { background: var(--accent); color: white;}
+        
+        /* Lists */
+        .list-item { display: flex; flex-direction: column; padding: 16px 0; border-bottom: 3px dashed var(--border); }
+        .list-item:first-child { padding-top: 0; }
+        .list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .item-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; }
+        .item-info strong { display: block; font-size: 18px; font-weight: 900; margin-bottom: 4px; text-transform: uppercase; }
+        .item-info span { font-size: 11px; font-weight: 800; background: var(--border); color: var(--surface); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
+        .item-value { font-weight: 900; font-size: 18px; }
+
+        /* Highlight Boxes */
+        .box-highlight { 
+            background: var(--primary); color: white; padding: 24px; border-radius: 8px; 
+            text-align: center; margin-bottom: 24px; border: 3px solid var(--border); box-shadow: var(--shadow); 
+        }
+        .box-highlight .title { font-size: 14px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; }
+        .box-highlight .amount { font-size: 42px; font-weight: 900; letter-spacing: -2px; text-shadow: 3px 3px 0px #000; }
+        
+        /* Navigation */
+        nav { 
+            position: fixed; bottom: 0; width: 100%; background: var(--surface); border-top: 4px solid var(--border); 
+            display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 50; 
+        }
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; color: var(--text-muted); 
+            font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; 
+            width: 20%; padding: 8px 0; border-radius: 6px; transition: var(--transition); border: 3px solid transparent;
+        }
+        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; fill: currentColor; transition: var(--transition); }
+        .nav-item.active { color: #000; background: var(--secondary); border: 3px solid var(--border); box-shadow: 2px 2px 0px var(--border); transform: translateY(-3px); }
+
+        .hidden { display: none !important; }
+        .mini-btn { width: auto; padding: 8px 14px; font-size: 12px; border-radius: 4px; box-shadow: 2px 2px 0px var(--border); }
+        .mini-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--border); }
+    </style>
+</head>
+<body>
+
+    <header id="main-header" style="display: none;">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="80" height="80" fill="#00FF66" stroke="#111111" stroke-width="6" rx="8"/>
+            <path d="M30,70 L45,30 L70,50 Z" fill="#4B0082" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>
+            <circle cx="70" cy="30" r="12" fill="#FF5E00" stroke="#111111" stroke-width="6"/>
+        </svg>
+        <div class="brand-text">
+            <h1>Grasp</h1>
+            <p>powered by brenduling</p>
+        </div>
+    </header>
+
+    <div id="app"></div>
+
+    <nav id="bottom-nav" style="display: none;">
+        <div class="nav-item active" onclick="navigate('dashboard')">
+            <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Home
+        </div>
+        <div class="nav-item" onclick="navigate('allowance')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Income
+        </div>
+        <div class="nav-item" onclick="navigate('fields')">
+            <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM11 7h2v2h-2zM7 7h2v2H7zm8 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Fields
+        </div>
+        <div class="nav-item" onclick="navigate('expenses')">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>Record
+        </div>
+        <div class="nav-item" onclick="navigate('settings')">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.06.62-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Set
+        </div>
+    </nav>
+
+<script>
+/** PWA Setup & The Missing SVG Logo */
+const SVG_LOGO = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="80" height="80" fill="#00FF66" stroke="#111111" stroke-width="6" rx="8"/><path d="M30,70 L45,30 L70,50 Z" fill="#4B0082" stroke="#111111" stroke-width="6" stroke-linejoin="round"/><circle cx="70" cy="30" r="12" fill="#FF5E00" stroke="#111111" stroke-width="6"/></svg>`;
+const manifest = { 
+    name: "Grasp", short_name: "Grasp", display: "standalone", background_color: "#E8E6DF", theme_color: "#4B0082",
+    icons: [{ src: 'data:image/svg+xml;utf8,' + SVG_LOGO, sizes: '192x192 512x512', type: 'image/svg+xml' }]
+};
+document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'}))}">`);
+
+/** Database & State Management */
+let appState = {
+    binId: localStorage.getItem('grasp_binId') || '69b65055b7ec241ddc6d1963',
+    apiKey: localStorage.getItem('grasp_apiKey') || '$2a$10$Tro6Ud5UHq2VqKQnp8Kxo.1MFLWorIUvmpahlY7t9jqDPWr0Xg2em',
+    users: [],
+    currentUser: null
+};
+
+function initLocalDB() {
+    const localUsers = localStorage.getItem('grasp_users_v3');
+    if (localUsers) appState.users = JSON.parse(localUsers);
+    
+    const loggedIn = localStorage.getItem('grasp_current_v3');
+    if (loggedIn) appState.currentUser = JSON.parse(loggedIn);
+}
+
+async function syncCloudDB() {
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${appState.binId}`, { headers: { 'X-Master-Key': appState.apiKey }});
+        if (res.ok) {
+            const data = await res.json();
+            if (data.record && data.record.users) {
+                appState.users = data.record.users;
+                if (appState.currentUser) {
+                    const cloudUser = appState.users.find(u => u.username === appState.currentUser.username);
+                    if (cloudUser) appState.currentUser = cloudUser;
+                }
+            }
+        }
+    } catch(e) {}
+}
+
+async function saveDB() {
+    if (appState.currentUser) {
+        const idx = appState.users.findIndex(u => u.username === appState.currentUser.username);
+        if (idx > -1) appState.users[idx] = appState.currentUser;
+        else appState.users.push(appState.currentUser);
+        localStorage.setItem('grasp_current_v3', JSON.stringify(appState.currentUser));
+    }
+    localStorage.setItem('grasp_users_v3', JSON.stringify(appState.users));
+    
+    renderCurrentView();
+
+    try {
+        await fetch(`https://api.jsonbin.io/v3/b/${appState.binId}`, { 
+            method: 'PUT', headers: { 'X-Master-Key': appState.apiKey, 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ users: appState.users }) 
+        });
+    } catch(e) {}
+}
+
+const $ = id => document.getElementById(id);
+const formatMoney = num => '₱' + parseFloat(num).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+/** Core Mathematical Engine */
+function getDays(freqStr, customDays) {
+    switch(freqStr) {
+        case 'daily': return 1;
+        case 'weekly': return 7;
+        case 'biweekly': return 14;
+        case 'monthly': return 30.4375;
+        case 'yearly': return 365.25;
+        case 'custom': return parseFloat(customDays) || 1;
+        default: return 30.4375;
+    }
+}
+
+function runEngine() {
+    const u = appState.currentUser;
+    if (!u || !u.allowance || !u.allowance.amount) return null;
+
+    const alw = u.allowance;
+    const alwDays = getDays(alw.frequency, alw.customDays);
+    
+    // 1. Calculate Total Cycle Income (Base + Additional)
+    let cycleIncome = parseFloat(alw.amount);
+    let extraIncomeBreakdown = [];
+    
+    (u.additionalIncomes || []).forEach(inc => {
+        let cycleBoost = 0;
+        if (inc.type === 'onetime') {
+            cycleBoost = parseFloat(inc.amount); // flat add
+        } else {
+            const incDays = getDays(inc.frequency, inc.customDays);
+            cycleBoost = parseFloat(inc.amount) * (alwDays / incDays); // prorated add
+        }
+        cycleIncome += cycleBoost;
+        extraIncomeBreakdown.push({ ...inc, cycleBoost });
+    });
+
+    // 2. Calculate Required Field Allocations
+    let cycleAllocated = 0;
+    const fieldsBreakdown = [];
+    
+    (u.fields || []).forEach(f => {
+        const fieldDays = getDays(f.frequency, f.customDays);
+        const deductPerCycle = parseFloat(f.amount) * (alwDays / fieldDays);
+        cycleAllocated += deductPerCycle;
+        fieldsBreakdown.push({ ...f, deductPerCycle });
+    });
+
+    // 3. Engine Output
+    const cycleDisposable = cycleIncome - cycleAllocated;
+    const dailyGuide = cycleDisposable > 0 ? (cycleDisposable / alwDays) : 0;
+    
+    let currentTotalExp = 0;
+    (u.currentExpenses || []).forEach(e => currentTotalExp += parseFloat(e.amount));
+
+    return { 
+        cycleIncome, alwDays, cycleAllocated, cycleDisposable, 
+        dailyGuide, fieldsBreakdown, extraIncomeBreakdown, currentTotalExp 
+    };
+}
+
+/** Routing System */
+let currentView = 'auth';
+function navigate(viewName) {
+    currentView = viewName;
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    let navItem = document.querySelector(`.nav-item[onclick="navigate('${viewName}')"]`);
+    if(navItem) navItem.classList.add('active');
+    renderCurrentView();
+}
+
+function renderCurrentView() {
+    const app = $('app');
+    $('main-header').style.display = appState.currentUser ? 'flex' : 'none';
+    $('bottom-nav').style.display = appState.currentUser ? 'flex' : 'none';
+
+    let html = '';
+    switch(currentView) {
+        case 'auth': html = viewAuth(); break;
+        case 'dashboard': html = viewDashboard(); break;
+        case 'allowance': html = viewAllowance(); break;
+        case 'fields': html = viewFields(); break;
+        case 'expenses': html = viewExpenses(); break;
+        case 'settings': html = viewSettings(); break;
+    }
+    app.innerHTML = `<div class="view active">${html}</div>`;
+}
+
+function renderFreqSelect(idPrefix, defaultFreq, defaultCustom) {
+    return `
+        <div class="form-group"><label>Frequency</label>
+            <select id="${idPrefix}Freq" onchange="document.getElementById('${idPrefix}CustomGrp').classList.toggle('hidden', this.value !== 'custom')">
+                <option value="daily" ${defaultFreq==='daily'?'selected':''}>Daily</option>
+                <option value="weekly" ${defaultFreq==='weekly'?'selected':''}>Weekly</option>
+                <option value="biweekly" ${defaultFreq==='biweekly'?'selected':''}>Bi-Weekly</option>
+                <option value="monthly" ${defaultFreq==='monthly'?'selected':''}>Monthly</option>
+                <option value="yearly" ${defaultFreq==='yearly'?'selected':''}>Yearly</option>
+                <option value="custom" ${defaultFreq==='custom'?'selected':''}>Custom Days</option>
+            </select>
+        </div>
+        <div class="form-group ${defaultFreq==='custom'?'':'hidden'}" id="${idPrefix}CustomGrp">
+            <label>Every X Days</label>
+            <input type="number" id="${idPrefix}Custom" value="${defaultCustom||''}" placeholder="e.g. 15">
+        </div>
+    `;
+}
+
+/** VIEWS */
+function viewAuth() {
+    return `
+        <div style="text-align:center; margin-top: 40px; margin-bottom: 30px;">
+            ${SVG_LOGO.replace('viewBox', 'width="100" height="100" viewBox')}
+            <h2 style="margin-top: 15px; font-size:32px; border:none; margin-bottom: 5px;">GRASP</h2>
+            <p style="color:var(--text-main); font-weight:800; font-size:12px; background:var(--secondary); display:inline-block; padding:4px 10px; border: 2px solid var(--border);">FINANCE ENGINE</p>
+        </div>
+        
+        <div class="card" id="loginForm">
+            <h3>System Login</h3>
+            <div class="form-group"><label>Username</label><input type="text" id="lUser"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="lPass"></div>
+            <button class="btn-primary" onclick="login()">Login</button>
+            <p style="text-align:center; margin-top:20px; font-size:14px; font-weight:800; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('loginForm').style.display='none';document.getElementById('regForm').style.display='block';">Create New Account</p>
+        </div>
+
+        <div class="card" id="regForm" style="display:none; border-color:var(--primary);">
+            <h3 style="color:var(--primary);">Register Profile</h3>
+            <div class="form-group"><label>Create Username</label><input type="text" id="rUser"></div>
+            <div class="form-group"><label>Create Password</label><input type="password" id="rPass"></div>
+            <button class="btn-secondary" onclick="register()">Register & Enter</button>
+            <p style="text-align:center; margin-top:20px; font-size:14px; font-weight:800; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('regForm').style.display='none';document.getElementById('loginForm').style.display='block';">Back to Login</p>
+        </div>
+    `;
+}
+
+function viewDashboard() {
+    const engine = runEngine();
+    if(!engine) return `
+        <div style="text-align:center; margin-top:100px;">
+            <h2 style="border:none;">SYSTEM STANDBY</h2>
+            <p style="font-weight:700; margin-bottom:20px; font-size:16px;">You must define your Primary Income Source to initialize the math engine.</p>
+            <button class="btn-accent" onclick="navigate('allowance')">Set Income Now</button>
+        </div>
+    `;
+
+    const isOver = engine.currentTotalExp > engine.cycleIncome;
+    const statCol = isOver ? 'var(--alert)' : 'var(--secondary)';
+    const textCol = isOver ? '#fff' : '#000';
+
+    // Savings History Output
+    const u = appState.currentUser;
+    const historyList = (u.savingsHistory || []).slice(-5).reverse().map(h => `
+        <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center; padding:10px 0;">
+            <div class="item-info"><strong>${h.date}</strong><span>Budget: ${formatMoney(h.budget)}</span></div>
+            <div class="item-value" style="color: ${h.saved >= 0 ? 'var(--secondary)' : 'var(--alert)'}">${h.saved >= 0 ? '+' : ''}${formatMoney(h.saved)}</div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="box-highlight">
+            <div class="title">Safe Daily Limit</div>
+            <div class="amount">${formatMoney(engine.dailyGuide)}</div>
+            <div style="font-size:12px; margin-top:8px; font-weight:800; background:rgba(0,0,0,0.2); display:inline-block; padding:4px 10px; border-radius:4px;">Income divided by ${Math.round(engine.alwDays)} days</div>
+        </div>
+
+        <div class="flex-row">
+            <div class="card" style="width: 47%; margin-bottom:0; padding:16px;">
+                <div style="font-size:11px; font-weight:900; text-transform:uppercase;">Cycle Budget</div>
+                <div style="font-size:18px; font-weight:900; color:var(--primary); margin-top:5px;">${formatMoney(engine.cycleIncome)}</div>
+            </div>
+            <div class="card" style="width: 47%; margin-bottom:0; padding:16px; background:${statCol}; border-color:var(--border);">
+                <div style="font-size:11px; font-weight:900; text-transform:uppercase; color:${textCol};">Cycle Spent</div>
+                <div style="font-size:18px; font-weight:900; color:${textCol}; margin-top:5px;">${formatMoney(engine.currentTotalExp)}</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:24px; background:var(--text-main); color:var(--surface);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="margin-bottom:4px; color:var(--surface);">Total Savings</h3>
+                    <div style="font-size:26px; font-weight:900; color:var(--secondary);">${formatMoney(appState.currentUser.savings || 0)}</div>
+                </div>
+                <button class="btn-accent" style="width:auto; padding:12px 20px; font-size:14px; border-color:#FFF;" onclick="settleCycle()">Settle Cycle</button>
+            </div>
+            <p style="font-size:11px; margin-top:12px; font-weight:600; color:#AAA;">Settling calculates expenses, pushes difference to savings, and logs history.</p>
+        </div>
+
+        <h3 style="margin-top:20px;">Recent Cycle Logs</h3>
+        <div class="card" style="background:#1A1A1A; color:#FFF;">
+            ${historyList || '<p style="text-align:center; font-weight:800; font-size:12px; color:#888;">NO CYCLES SETTLED YET.</p>'}
+        </div>
+    `;
+}
+
+function viewAllowance() {
+    const u = appState.currentUser;
+    const alw = u.allowance || { amount: '', frequency: 'monthly', customDays: '' };
+    
+    // Additional Incomes Generator
+    const engine = runEngine() || { extraIncomeBreakdown: [] };
+    const extraIncList = engine.extraIncomeBreakdown.map((inc, i) => `
+        <div class="list-item">
+            <div class="item-header">
+                <strong>${inc.name}</strong>
+                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delExtraInc(${i})">DEL</button>
+            </div>
+            <div style="font-size:13px; font-weight:800; margin-bottom:5px;">Input: ${formatMoney(inc.amount)} / ${inc.type==='onetime' ? 'One-Time' : inc.frequency}</div>
+            <div style="font-size:13px; background:var(--secondary); color:#000; display:inline-block; padding:4px 8px; border:2px solid var(--border); font-weight:900;">
+                Cycle Boost: +${formatMoney(inc.cycleBoost)}
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <h2>Income Streams</h2>
+        
+        <div class="card" style="border-width:4px;">
+            <h3>Primary Allowance</h3>
+            <p style="font-size:12px; font-weight:700; margin-bottom:15px; color:var(--text-muted);">The engine synchronizes all mathematical deductions against this cycle.</p>
+            <div class="form-group"><label>Base Amount</label><input type="number" id="alwAmount" value="${alw.amount}" placeholder="0.00"></div>
+            ${renderFreqSelect('alw', alw.frequency, alw.customDays)}
+            <button class="btn-primary" onclick="saveAllowance()">Update Primary</button>
+        </div>
+
+        <div class="card" style="background:var(--secondary); border-color:var(--border);">
+            <h3 style="color:#000;">Add Extra Income</h3>
+            <div class="form-group"><label style="color:#000;">Income Source</label><input type="text" id="eiName" placeholder="e.g. Side Hustle, Gift"></div>
+            <div class="form-group"><label style="color:#000;">Amount</label><input type="number" id="eiAmount" placeholder="0.00"></div>
+            <div class="form-group"><label style="color:#000;">Type</label>
+                <select id="eiType" onchange="document.getElementById('eiFreqWrap').classList.toggle('hidden', this.value === 'onetime')">
+                    <option value="onetime">One-Time (Current Cycle Only)</option>
+                    <option value="recurring">Recurring</option>
+                </select>
+            </div>
+            <div id="eiFreqWrap" class="hidden">
+                ${renderFreqSelect('ei', 'monthly', '')}
+            </div>
+            <button class="btn-accent" style="margin-top:10px; border-color:#000;" onclick="addExtraInc()">Inject Income</button>
+        </div>
+
+        <h3 style="margin-top:20px;">Active Extra Streams</h3>
+        <div class="card">${extraIncList || '<p style="text-align:center; font-weight:800;">NO EXTRA INCOME ADDED.</p>'}</div>
+    `;
+}
+
+function viewFields() {
+    const engine = runEngine();
+    if(!engine) return `<div style="padding:20px; text-align:center; font-weight:800;">PLEASE SET INCOME FIRST.</div>`;
+    
+    let html = engine.fieldsBreakdown.map((f, i) => `
+        <div class="list-item">
+            <div class="item-header">
+                <strong>${f.name}</strong>
+                <button class="mini-btn" style="background:var(--alert); color:#FFF;" onclick="delField(${i})">DEL</button>
+            </div>
+            <div style="font-size:13px; font-weight:800; margin-bottom:5px;">Target: ${formatMoney(f.amount)} / ${f.frequency==='custom'?f.customDays+' Days':f.frequency}</div>
+            <div style="font-size:13px; background:var(--primary); color:#FFF; display:inline-block; padding:4px 8px; border:2px solid var(--border); font-weight:900;">
+                Engine Pulls: ${formatMoney(f.deductPerCycle)} / Cycle
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <h2>System Fields</h2>
+        <div class="card" style="background:var(--primary); color:white;">
+            <h3 style="color:var(--secondary);">Add Expense Field</h3>
+            <div class="form-group"><label style="color:white;">Field Name</label><input type="text" id="fName" placeholder="e.g. Rent, Groceries"></div>
+            <div class="form-group"><label style="color:white;">Required Amount</label><input type="number" id="fAmount" placeholder="0.00"></div>
+            ${renderFreqSelect('f', 'monthly', '')}
+            <button class="btn-secondary" style="margin-top:10px;" onclick="addField()">Inject Field</button>
+        </div>
+        
+        <h3>Allocations Breakdown</h3>
+        <p style="font-size:13px; font-weight:700; margin-bottom:15px; color:var(--text-muted);">Calculated burdens deducted from your income cycle.</p>
+        <div class="card">${html || '<p style="text-align:center; font-weight:800;">NO FIELDS ACTIVE.</p>'}</div>
+    `;
+}
+
+function viewExpenses() {
+    const u = appState.currentUser;
+    if(!u.allowance || !u.allowance.amount) return `<div style="padding:20px; text-align:center; font-weight:800;">PLEASE SET INCOME FIRST.</div>`;
+    
+    u.fields = u.fields || [];
+    u.currentExpenses = u.currentExpenses || [];
+
+    let opts = u.fields.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+    
+    let list = u.currentExpenses.map((e, i) => {
+        let isUnplanned = e.category === 'Unplanned';
+        return `
+        <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
+            <div class="item-info">
+                <strong>${e.category}</strong>
+                <span style="background:${isUnplanned?'var(--alert)':'var(--primary)'}; border:2px solid var(--border);">${e.date}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="item-value text-neg" style="color:var(--alert)">-${formatMoney(e.amount)}</div>
+                <button class="mini-btn" style="background:var(--bg); border:2px solid var(--border); box-shadow:none; font-size:16px;" onclick="delExp(${i})">✖</button>
+            </div>
+        </div>
+    `}).join('');
+
+    return `
+        <h2>Record Data</h2>
+        <div class="card" style="border: 4px solid var(--accent); background: #FFEBD6;">
+            <div class="form-group"><label>Target Field</label>
+                <select id="eCat">${opts}<option value="Unplanned" selected>Unplanned / Other</option></select>
+            </div>
+            <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00"></div>
+            <button class="btn-accent" onclick="recordExp()">Log Data</button>
+        </div>
+        <h3 style="margin-top:20px;">Cycle Output Log</h3>
+        <div class="card">${list || '<p style="text-align:center; font-weight:800;">NO DATA LOGGED.</p>'}</div>
+    `;
+}
+
+function viewSettings() {
+    return `
+        <h2>Settings</h2>
+        <div class="card">
+            <div class="list-item" style="border:none; flex-direction:row; justify-content:space-between; align-items:center;">
+                <div class="item-info"><strong style="margin:0;">System Exit</strong></div>
+                <button onclick="logout()" class="mini-btn" style="background:var(--alert); color:#FFF; width:100px;">LOGOUT</button>
+            </div>
+        </div>
+    `;
+}
+
+/** ACTIONS */
+function login() {
+    const u = $('lUser').value.trim();
+    const p = $('lPass').value.trim();
+    if (!u || !p) return alert("Please enter Username and Password.");
+    
+    const user = appState.users.find(x => x.username === u && x.password === p);
+    if(user) { 
+        appState.currentUser = user; 
+        saveDB(); 
+        navigate('dashboard'); 
+    } else { 
+        alert('Access Denied: Incorrect Username or Password'); 
+    }
+}
+
+function register() {
+    const u = $('rUser').value.trim();
+    const p = $('rPass').value.trim();
+    if (!u || !p) return alert("Please enter a Username and Password to register.");
+    if(appState.users.find(x => x.username === u)) return alert('Username already exists. Please choose another.');
+    
+    const newUser = { 
+        id: Date.now().toString(), username: u, password: p, allowance: null, 
+        fields: [], additionalIncomes: [], currentExpenses: [], savingsHistory: [], savings: 0 
+    };
+    
+    appState.currentUser = newUser;
+    saveDB(); 
+    navigate('dashboard');
+}
+
+function logout() {
+    appState.currentUser = null;
+    localStorage.removeItem('grasp_current_v3');
+    navigate('auth');
+}
+
+function saveAllowance() {
+    const amt = parseFloat($('alwAmount').value);
+    if (isNaN(amt) || amt <= 0) return alert("Please enter a valid allowance amount.");
+    
+    appState.currentUser.allowance = { 
+        amount: amt, 
+        frequency: $('alwFreq').value,
+        customDays: $('alwCustom') ? $('alwCustom').value : ''
+    };
+    saveDB(); 
+    navigate('dashboard');
+}
+
+function addExtraInc() {
+    const n = $('eiName').value.trim();
+    const a = parseFloat($('eiAmount').value);
+    const t = $('eiType').value;
+    const f = $('eiFreq').value;
+    const c = $('eiCustom') ? $('eiCustom').value : '';
+
+    if(!n || isNaN(a) || a <= 0) return alert("Please provide a valid Name and Amount.");
+
+    appState.currentUser.additionalIncomes = appState.currentUser.additionalIncomes || [];
+    appState.currentUser.additionalIncomes.push({ name: n, amount: a, type: t, frequency: f, customDays: c });
+    saveDB();
+}
+
+function delExtraInc(i) {
+    if(confirm("Delete this extra income stream?")) {
+        appState.currentUser.additionalIncomes.splice(i,1);
+        saveDB();
+    }
+}
+
+function addField() {
+    const n = $('fName').value.trim();
+    const a = parseFloat($('fAmount').value);
+    const f = $('fFreq').value;
+    const c = $('fCustom') ? $('fCustom').value : '';
+    
+    if(!n) return alert("Please enter a Field Name.");
+    if(isNaN(a) || a <= 0) return alert("Please enter a valid Field Amount.");
+    
+    appState.currentUser.fields = appState.currentUser.fields || [];
+    appState.currentUser.fields.push({ name: n, amount: a, frequency: f, customDays: c });
+    saveDB();
+}
+
+function delField(i) { 
+    if(confirm("Delete this field?")) {
+        appState.currentUser.fields.splice(i,1); 
+        saveDB(); 
+    }
+}
+
+function recordExp() {
+    const c = $('eCat').value;
+    const a = parseFloat($('eAmount').value);
+    
+    if(isNaN(a) || a <= 0) return alert("Please enter a valid Expense Amount.");
+    
+    appState.currentUser.currentExpenses = appState.currentUser.currentExpenses || [];
+    appState.currentUser.currentExpenses.push({ category: c, amount: a, date: new Date().toISOString().split('T')[0] });
+    saveDB();
+    $('eAmount').value = ''; 
+}
+
+function delExp(i) { 
+    if(confirm("Remove this logged expense?")) {
+        appState.currentUser.currentExpenses.splice(i,1); 
+        saveDB(); 
+    }
+}
+
+function settleCycle() {
+    if(!confirm("WARNING: Settling will calculate all logged expenses against your cycle budget, log the history, and adjust your total savings. Proceed?")) return;
+    
+    const engine = runEngine();
+    const difference = engine.cycleIncome - engine.currentTotalExp;
+    
+    // Update Savings
+    appState.currentUser.savings = (parseFloat(appState.currentUser.savings) || 0) + difference;
+    
+    // Log History
+    appState.currentUser.savingsHistory = appState.currentUser.savingsHistory || [];
+    appState.currentUser.savingsHistory.push({
+        date: new Date().toLocaleDateString(),
+        budget: engine.cycleIncome,
+        spent: engine.currentTotalExp,
+        saved: difference
+    });
+
+    // Reset Cycle
+    appState.currentUser.currentExpenses = []; 
+    // Clear out one-time incomes so they don't roll over to the next cycle
+    appState.currentUser.additionalIncomes = (appState.currentUser.additionalIncomes || []).filter(inc => inc.type === 'recurring');
+    
+    saveDB();
+    alert(`CYCLE SETTLED\n\nBudget: ${formatMoney(engine.cycleIncome)}\nSpent: ${formatMoney(engine.currentTotalExp)}\n\nImpact on Savings: ${difference >= 0 ? '+' : ''}${formatMoney(difference)}`);
+    navigate('dashboard');
+}
+
+/** Initialization */
+window.onload = async () => {
+    initLocalDB();
+    if(appState.currentUser) navigate('dashboard'); 
+    else navigate('auth');
+    
+    await syncCloudDB();
+    if(appState.currentUser) renderCurrentView();
+};
+</script>
+</body>
+</html>
