@@ -354,7 +354,6 @@
             background: var(--bg); color: var(--text-main); font-size: 16px; font-weight: 600;
             transition: var(--transition); appearance: none; outline: none;
         }
-        input[type="date"] { font-family: inherit; }
         input[type="color"] { padding: 4px; height: 50px; cursor: pointer; }
         input:focus, select:focus { background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
         input:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -371,18 +370,6 @@
         .btn-secondary { background: var(--secondary); color: #000; }
         .btn-accent { background: var(--accent); color: #000; }
         .btn-alert { background: var(--alert); color: white; }
-
-        .btn-floating {
-            position: fixed; bottom: 85px; right: 20px;
-            background: var(--alert); color: #fff;
-            border: none; border-radius: 30px;
-            padding: 12px 20px; font-weight: 800; font-size: 14px;
-            box-shadow: 0 4px 15px rgba(255,59,48,0.4);
-            cursor: pointer; z-index: 1000;
-            display: flex; align-items: center; gap: 8px;
-            animation: bounceIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes bounceIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
         /* Lists */
         .list-item { display: flex; flex-direction: column; padding: 16px 0; border-bottom: 1px solid var(--border); }
@@ -420,7 +407,7 @@
             padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 50; 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
-        body.theme-midnight header, body.theme-abyssal nav, body.theme-venom nav, 
+        body.theme-midnight nav, body.theme-abyssal nav, body.theme-venom nav, 
         body.theme-neotokyo nav, body.theme-dark nav, body.theme-assassin nav,
         body.theme-mage nav, body.theme-ghoul nav, body.theme-ghost2 nav,
         body.theme-space nav, body.theme-vampire nav, body.theme-graphic-space nav { 
@@ -464,7 +451,6 @@
             padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             transform: translateY(20px); transition: transform 0.3s ease;
             color: var(--text-main);
-            max-height: 80vh; overflow-y: auto;
         }
         .modal-overlay.active .modal-box { transform: translateY(0); }
         .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
@@ -472,12 +458,6 @@
         .modal-input { margin-bottom: 20px; display: none; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
         .modal-actions button { padding: 12px; font-size: 14px; width: auto; flex: 1; }
-
-        /* Detail Elements */
-        details { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
-        summary { padding: 14px 16px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; outline: none; color: var(--text-main); font-size: 14px;}
-        summary::-webkit-details-marker { display: none; }
-        .details-content { padding: 14px 16px; border-top: 1px solid var(--border); background: var(--surface); }
     </style>
 </head>
 <body class="theme-default">
@@ -542,71 +522,31 @@ document.addEventListener('keydown', function(e) {
 });
 
 /** APP VERSION CONTROL */
-const SYSTEM_VERSION = '8.10'; 
+const SYSTEM_VERSION = '8.5'; 
 
-/** SAFE LOCAL STORAGE WRAPPER */
-const Storage = {
-    get: function(k, fb) { try { const v = localStorage.getItem(k); return v ? v : fb; } catch(e) { return fb; } },
-    set: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
-    del: function(k) { try { localStorage.removeItem(k); } catch(e) {} }
+/** PWA Setup */
+const SVG_LOGO = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="%232EE6A6" stroke-width="4" stroke-dasharray="10 5"/><path d="M35,65 Q50,85 65,65 L60,50 Q50,40 40,50 Z" fill="%23FFC857" opacity="0.9"/><circle cx="50" cy="50" r="15" fill="%232E2A8C"/><circle cx="20" cy="50" r="6" fill="%232EE6A6"/><circle cx="80" cy="50" r="6" fill="%232EE6A6"/><circle cx="50" cy="20" r="6" fill="%232EE6A6"/></svg>`;
+const ICON_SVG = "data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D%220%200%20100%20100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%232E2A8C%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22none%22%20stroke%3D%22%232EE6A6%22%20stroke-width%3D%224%22%20stroke-dasharray%3D%2210%205%22%2F%3E%3Cpath%20d%3D%22M35%2C65%20Q50%2C85%2065%2C65%20L60%2C50%20Q50%2C40%2040%2C50%20Z%22%20fill%3D%22%23FFC857%22%20opacity%3D%220.9%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2215%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2250%22%20r%3D%226%22%20fill%3D%22%232EE6A6%22%2F%3E%3Ccircle%20cx%3D%2280%22%20cy%3D%2250%22%20r%3D%226%22%20fill%3D%22%232EE6A6%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2220%22%20r%3D%226%22%20fill%3D%22%232EE6A6%22%2F%3E%3C%2Fsvg%3E";
+const manifest = { 
+    name: "Grasp", short_name: "Grasp", display: "standalone", background_color: "#F4F6F8", theme_color: "#2E2A8C",
+    icons: [
+        { src: ICON_SVG, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+        { src: ICON_SVG, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+    ]
 };
+const manifestStr = encodeURIComponent(JSON.stringify(manifest));
+document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="data:application/manifest+json;charset=utf-8,${manifestStr}">`);
 
-/** GLOBAL VIEWING DATE STATE (For Time Travel) */
-window.currentViewingDate = new Date();
-window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
-
-function setViewingDate(val) {
-    if(!val) return;
-    const [y, m, d] = val.split('-');
-    window.currentViewingDate = new Date(y, m - 1, d);
-    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
-    renderCurrentView();
-}
-
-function shiftDate(offset) {
-    window.currentViewingDate.setDate(window.currentViewingDate.getDate() + offset);
-    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
-    renderCurrentView();
-}
-
-function resetToToday() {
-    window.currentViewingDate = new Date();
-    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
-    renderCurrentView();
-}
-
-function checkBudgetLimit() {
-    const amtEl = $('fAmount');
-    const freqEl = $('fFreq');
-    const customEl = $('fCustom');
-    const warningEl = $('budgetWarning');
-    const safeEl = $('budgetSafe');
-    const btnEl = $('btnSaveBudget');
-    
-    if (!amtEl || !freqEl || !warningEl || !safeEl || !btnEl) return;
-    
-    const val = parseFloat(amtEl.value) || 0;
-    const freq = freqEl.value;
-    const cDays = customEl ? customEl.value : 1;
-    
-    let d = 30.4375;
-    if(freq==='daily') d=1; else if(freq==='weekly') d=7; else if(freq==='biweekly') d=14; 
-    else if(freq==='yearly') d=365.25; else if(freq==='custom') d=parseFloat(cDays)||1;
-    
-    const cycleMultiplier = window.engineAlwDaysTotal / d;
-    const requestedPool = val * cycleMultiplier;
-    const max = window.currentMaxBudgetAllowed;
-
-    if (requestedPool > max) {
-        warningEl.innerText = "❌ Expense is over available cycle limit! Cannot proceed.";
-        warningEl.style.display = 'block';
-        safeEl.style.display = 'none';
-        btnEl.disabled = true;
-    } else {
-        warningEl.style.display = 'none';
-        safeEl.style.display = 'block';
-        btnEl.disabled = false;
-    }
+if ('serviceWorker' in navigator) {
+    const swCode = `
+        const CACHE_NAME = 'grasp-v${SYSTEM_VERSION}';
+        self.addEventListener('install', e => { self.skipWaiting(); });
+        self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
+        self.addEventListener('fetch', e => {
+            if(e.request.url.includes('jsonbin') || e.request.url.includes('cloudinary')) return; 
+            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+        });`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(()=>{});
 }
 
 /** SMART UI CONTROLLERS */
@@ -651,25 +591,24 @@ function uiPrompt(title, msg, onConfirm) {
 
 /** Database & State Management */
 let appState = {
-    binId: Storage.get('grasp_binId', '69b65055b7ec241ddc6d1963'),
-    apiKey: Storage.get('grasp_apiKey', '$2a$10$Tro6Ud5UHq2VqKQnp8Kxo.1MFLWorIUvmpahlY7t9jqDPWr0Xg2em'),
+    binId: localStorage.getItem('grasp_binId') || '69b65055b7ec241ddc6d1963',
+    apiKey: localStorage.getItem('grasp_apiKey') || '$2a$10$Tro6Ud5UHq2VqKQnp8Kxo.1MFLWorIUvmpahlY7t9jqDPWr0Xg2em',
     users: [], currentUser: null
 };
 
 window.editFieldIdx = -1;
-window.editExpIdx = -1;
 
 function initLocalDB() {
-    const currentVer = Storage.get('grasp_sys_version', '');
+    const currentVer = localStorage.getItem('grasp_sys_version');
     if (currentVer !== SYSTEM_VERSION) {
-        Storage.del('grasp_current_v8');
-        Storage.set('grasp_sys_version', SYSTEM_VERSION);
+        localStorage.removeItem('grasp_current_v8');
+        localStorage.setItem('grasp_sys_version', SYSTEM_VERSION);
     }
 
-    const localUsers = Storage.get('grasp_users_v8', null); 
+    const localUsers = localStorage.getItem('grasp_users_v8'); 
     if (localUsers) appState.users = JSON.parse(localUsers);
     
-    const loggedIn = Storage.get('grasp_current_v8', null); 
+    const loggedIn = localStorage.getItem('grasp_current_v8'); 
     if (loggedIn) {
         appState.currentUser = JSON.parse(loggedIn);
         handleDayRollOver();
@@ -679,9 +618,9 @@ function initLocalDB() {
 function handleDayRollOver() {
     let u = appState.currentUser;
     if (!u) return;
-    const realTodayStr = new Date().toLocaleDateString();
+    const todayStr = new Date().toLocaleDateString();
 
-    if (u.lastActiveDate && u.lastActiveDate !== realTodayStr) {
+    if (u.lastActiveDate && u.lastActiveDate !== todayStr) {
         if (u.lastKnownDailyRemaining && u.lastKnownDailyRemaining > 0) {
             u.savings = (u.savings || 0) + u.lastKnownDailyRemaining;
             u.currentExpenses = u.currentExpenses || [];
@@ -690,10 +629,10 @@ function handleDayRollOver() {
                 amount: u.lastKnownDailyRemaining, 
                 date: new Date().toLocaleString() + ' (Auto-Stash)' 
             });
-            logTransaction('Auto-Stash (Missed Day)', u.lastKnownDailyRemaining, 'stash', new Date().toLocaleString());
+            logTransaction('Auto-Stash (Missed Day)', u.lastKnownDailyRemaining, 'stash');
         }
     }
-    u.lastActiveDate = realTodayStr;
+    u.lastActiveDate = todayStr;
 }
 
 async function syncCloudDB() {
@@ -720,9 +659,9 @@ async function saveDB() {
         const idx = appState.users.findIndex(u => u.username === appState.currentUser.username);
         if (idx > -1) appState.users[idx] = appState.currentUser;
         else appState.users.push(appState.currentUser);
-        Storage.set('grasp_current_v8', JSON.stringify(appState.currentUser));
+        localStorage.setItem('grasp_current_v8', JSON.stringify(appState.currentUser));
     }
-    Storage.set('grasp_users_v8', JSON.stringify(appState.users));
+    localStorage.setItem('grasp_users_v8', JSON.stringify(appState.users));
     
     renderCurrentView();
 
@@ -737,11 +676,11 @@ async function saveDB() {
 const $ = id => document.getElementById(id);
 const formatMoney = num => '₱' + parseFloat(num).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 
-function logTransaction(title, amount, type, customDateStr = null) {
+function logTransaction(title, amount, type) {
     if(!appState.currentUser) return;
     appState.currentUser.transactionLog = appState.currentUser.transactionLog || [];
     appState.currentUser.transactionLog.unshift({
-        title, amount: parseFloat(amount), type, date: customDateStr || new Date().toLocaleString()
+        title, amount: parseFloat(amount), type, date: new Date().toLocaleString()
     });
 }
 
@@ -757,12 +696,12 @@ function runEngine() {
     const u = appState.currentUser;
     if (!u || !u.allowance || !u.allowance.amount) return null;
 
-    const targetDateStr = window.currentViewingDateStr || new Date().toLocaleDateString();
-
     const alw = u.allowance;
     const alwDaysTotal = getDays(alw.frequency, alw.customDays);
     
     let cycleEndTarget = u.cycleEndTarget || (Date.now() + alwDaysTotal * 86400000);
+    let daysRemaining = Math.ceil((cycleEndTarget - Date.now()) / 86400000);
+    if (daysRemaining < 1) daysRemaining = 1; 
     
     let cycleIncome = parseFloat(alw.amount);
     let extraIncomeBreakdown = [];
@@ -777,6 +716,7 @@ function runEngine() {
 
     let cycleAllocated = 0;
     const fieldsBreakdown = [];
+    const todayStr = new Date().toLocaleDateString();
     
     (u.fields || []).forEach(f => {
         const budgetTotal = parseFloat(f.amount) * (alwDaysTotal / getDays(f.frequency, f.customDays));
@@ -796,51 +736,37 @@ function runEngine() {
     let pastGeneralSpent = 0;
     let todayGeneralSpent = 0;
     let todayVaultStashed = 0;
-    let allCategoriesTodaySpent = 0;
 
     (u.currentExpenses || []).forEach(e => {
         currentTotalExp += parseFloat(e.amount);
+        const eDateStr = new Date(e.date).toLocaleDateString();
         
-        let dObj = new Date(e.date);
-        if(isNaN(dObj.getTime())) dObj = new Date(); // Failsafe against old corrupted dates
-        const eDateStr = dObj.toLocaleDateString();
-        
-        const amt = parseFloat(e.amount);
-
         let isBudgetExpense = false;
         const matchedBudget = fieldsBreakdown.find(b => b.name === e.category);
         
         if (matchedBudget) {
-            matchedBudget.spent += amt;
-            if(eDateStr === targetDateStr) {
-                matchedBudget.todaySpent += amt;
-                allCategoriesTodaySpent += amt;
-            }
+            matchedBudget.spent += parseFloat(e.amount);
+            if(eDateStr === todayStr) matchedBudget.todaySpent += parseFloat(e.amount);
             matchedBudget.remaining = matchedBudget.budgetTotal - matchedBudget.spent;
             isBudgetExpense = true;
         }
 
-        if (!isBudgetExpense) {
-            if (e.category === 'Vault Transfer' || e.category.includes('Auto-Stash')) {
-                if (eDateStr === targetDateStr) todayVaultStashed += amt;
-                else pastGeneralSpent += amt;
+        // ALL EXPENSES NOW DEDUCT FROM THE GLOBAL POOL AND AFFECT DAILY ALLOWANCE
+        if (e.category === 'Vault Transfer' || e.category.includes('Auto-Stash')) {
+            if (eDateStr === todayStr) todayVaultStashed += parseFloat(e.amount);
+            else pastGeneralSpent += parseFloat(e.amount);
+        } else {
+            if (eDateStr === todayStr) {
+                todayGeneralSpent += parseFloat(e.amount);
             } else {
-                if (eDateStr === targetDateStr) {
-                    todayGeneralSpent += amt;
-                    allCategoriesTodaySpent += amt;
-                } else {
-                    pastGeneralSpent += amt;
-                }
+                pastGeneralSpent += parseFloat(e.amount);
             }
         }
     });
 
-    const viewingDateObj = window.currentViewingDate;
-    let daysRemaining = Math.ceil((cycleEndTarget - viewingDateObj.getTime()) / 86400000);
-    if (daysRemaining < 1) daysRemaining = 1; 
-
+    // Compute Static Allocations & dynamic flags
     fieldsBreakdown.forEach(b => {
-        b.dailyLimit = b.budgetTotal / alwDaysTotal; 
+        b.dailyLimit = b.budgetTotal / alwDaysTotal; // Original intended daily limit stays static
         if (b.remaining <= 0) {
             b.status = 'BREACHED';
             b.remaining = 0; 
@@ -856,14 +782,13 @@ function runEngine() {
     const totalGeneralSpent = pastGeneralSpent + todayGeneralSpent + todayVaultStashed;
     const generalCycleRemaining = cycleIncome - totalGeneralSpent;
     
+    // Core Engine Logic for next day borrowing automatically happens here:
     const dailyAllowancePool = cycleIncome - pastGeneralSpent;
     const dailyAllowance = dailyAllowancePool > 0 ? (dailyAllowancePool / daysRemaining) : 0;
     
     const dailyRemaining = dailyAllowance - todayGeneralSpent - todayVaultStashed;
 
-    if (targetDateStr === new Date().toLocaleDateString()) {
-        u.lastKnownDailyRemaining = dailyRemaining > 0 ? dailyRemaining : 0;
-    }
+    u.lastKnownDailyRemaining = dailyRemaining > 0 ? dailyRemaining : 0;
 
     window.engineCycleIncome = cycleIncome;
     window.engineCycleAllocated = cycleAllocated;
@@ -872,7 +797,7 @@ function runEngine() {
     return { 
         cycleIncome, alwDaysTotal, cycleAllocated, daysRemaining,
         dailyAllowance, dailyRemaining, todayGeneralSpent, generalCycleRemaining,
-        fieldsBreakdown, extraIncomeBreakdown, currentTotalExp, allCategoriesTodaySpent 
+        fieldsBreakdown, extraIncomeBreakdown, currentTotalExp 
     };
 }
 
@@ -900,7 +825,6 @@ let currentView = 'auth';
 function navigate(viewName) {
     currentView = viewName;
     window.editFieldIdx = -1; 
-    window.editExpIdx = -1; 
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     let navItem = document.querySelector(`.nav-item[onclick="navigate('${viewName}')"]`);
     if(navItem) navItem.classList.add('active');
@@ -922,17 +846,7 @@ function renderCurrentView() {
         case 'expenses': html = viewExpenses(); break;
         case 'profile': html = viewProfile(); break;
     }
-
-    let floatingBtn = '';
-    if (window.currentViewingDateStr && window.currentViewingDateStr !== new Date().toLocaleDateString() && appState.currentUser) {
-        floatingBtn = `<button class="btn-floating" onclick="resetToToday()">📅 Back to Today</button>`;
-    }
-
-    app.innerHTML = `<div class="view active">${html}</div>${floatingBtn}`;
-    
-    if (currentView === 'fields') {
-        setTimeout(checkBudgetLimit, 50);
-    }
+    app.innerHTML = `<div class="view active">${html}</div>`;
 }
 
 function renderFreqSelect(idPrefix, defaultFreq, defaultCustom) {
@@ -1032,7 +946,7 @@ function viewDashboard() {
                     </div>
                     <div style="font-size: 12px; color:var(--text-muted); display:flex; justify-content:space-between; margin-bottom: 8px;">
                         <span>Allocated Daily: <strong>${formatMoney(b.dailyLimit)}</strong></span>
-                        <span style="color:${b.todaySpent > b.dailyLimit ? 'var(--alert)' : 'var(--text-muted)'}">Spent on Date: ${formatMoney(b.todaySpent)}</span>
+                        <span style="color:${b.todaySpent > b.dailyLimit ? 'var(--alert)' : 'var(--text-muted)'}">Spent Today: ${formatMoney(b.todaySpent)}</span>
                     </div>
                     <div style="font-weight: 800; font-size: 16px; color: ${b.remaining <= 0 ? 'var(--alert)' : 'var(--primary)'}; border-top: 1px solid var(--border); padding-top: 8px;">
                         Cycle Remaining: ${formatMoney(b.remaining)}
@@ -1045,32 +959,14 @@ function viewDashboard() {
     }
 
     const freqLabel = appState.currentUser.allowance.frequency.toUpperCase();
-    
-    const viewingDateObj = window.currentViewingDate;
-    const todayLabel = viewingDateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const yyyy = viewingDateObj.getFullYear();
-    const mm = String(viewingDateObj.getMonth() + 1).padStart(2, '0');
-    const dd = String(viewingDateObj.getDate()).padStart(2, '0');
-    const datePickerVal = `${yyyy}-${mm}-${dd}`;
-    const isToday = window.currentViewingDateStr === new Date().toLocaleDateString();
+    const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     return `
         ${warningHtml}
 
-        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px;">
-            <button onclick="shiftDate(-1)" style="width:36px; height:36px; border-radius:12px; padding:0; background:var(--surface); border:1px solid var(--border); color:var(--primary); box-shadow:0 2px 8px rgba(0,0,0,0.05); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;">‹</button>
-            
-            <div style="position:relative; background: var(--primary-glow); padding: 10px 20px; border-radius: 14px; text-align:center; border: 1px solid rgba(0,0,0,0.05); min-width: 180px;">
-                <input type="date" id="homeDatePicker" value="${datePickerVal}" style="position:absolute; opacity:0.01; width:100%; height:100%; top:0; left:0; cursor:pointer; z-index:10;" onchange="setViewingDate(this.value)" onclick="try{this.showPicker();}catch(e){}">
-                <div style="font-size:12px; font-weight:800; color:var(--primary); text-transform:uppercase; pointer-events:none; white-space:nowrap;">
-                    📅 ${todayLabel}
-                </div>
-            </div>
-
-            <button onclick="shiftDate(1)" style="width:36px; height:36px; border-radius:12px; padding:0; background:var(--surface); border:1px solid var(--border); color:var(--primary); box-shadow:0 2px 8px rgba(0,0,0,0.05); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;">›</button>
-        </div>
-        <div style="text-align:center; font-size:15px; font-weight:900; color:var(--text-main); margin-bottom:20px; opacity:0.8;">
-            TOTAL BUDGET: ${formatMoney(engine.cycleIncome)} • ${freqLabel}
+        <div style="text-align:center; margin-bottom:20px;">
+            <div style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">${todayLabel}</div>
+            <div style="font-size:16px; font-weight:900; color:var(--primary); margin-top:4px;">TOTAL BUDGET: ${formatMoney(engine.cycleIncome)} • ${freqLabel}</div>
         </div>
         
         <div class="card" style="padding: 18px; border-color: var(--primary);">
@@ -1090,25 +986,20 @@ function viewDashboard() {
             </div>
         </div>
 
-        <div class="box-highlight" style="padding-bottom: 15px;">
+        <div class="box-highlight">
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div style="text-align:left;">
                     <div class="title" style="font-size:10px; margin-bottom:4px; opacity:0.8;">Daily Allocated</div>
                     <div class="amount" style="font-size:22px;">${formatMoney(engine.dailyAllowance)}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div class="title" style="font-size:10px; margin-bottom:4px;">${isToday ? 'Left Today' : 'Left on Date'}</div>
+                    <div class="title" style="font-size:10px; margin-bottom:4px;">Left Today</div>
                     <div class="amount" style="font-size:28px; color:${engine.dailyRemaining <= 0 ? 'var(--alert)' : '#fff'};">${formatMoney(engine.dailyRemaining)}</div>
                 </div>
             </div>
-            
-            <div style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2); display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:12px; font-weight:700; text-transform:uppercase;">Daily Expense Total:</div>
-                <div style="font-size:16px; font-weight:900;">${formatMoney(engine.allCategoriesTodaySpent)}</div>
-            </div>
-
-            ${engine.dailyRemaining < 0 ? `<div style="font-size:11px; color:var(--alert); font-weight:700; margin-top:12px; background:rgba(255,255,255,0.9); padding:8px; border-radius:8px; border:2px solid var(--alert);">Overspent by ${formatMoney(Math.abs(engine.dailyRemaining))}. This steals from future allocation.</div>` : ''}
-            ${engine.dailyRemaining > 0 && isToday ? `<button onclick="stashDailyRemaining(${engine.dailyRemaining})" style="margin-top:15px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:none; padding:10px; font-size:14px;">+ Add Remaining to Vault</button>` : ''}
+            ${engine.dailyRemaining < 0 ? `<div style="font-size:11px; color:var(--alert); font-weight:700; margin-top:8px; background:rgba(255,255,255,0.9); padding:8px; border-radius:8px; border:2px solid var(--alert);">Overspent by ${formatMoney(Math.abs(engine.dailyRemaining))}. This steals from tomorrow's allocation.</div>` : ''}
+            ${engine.dailyRemaining > 0 ? `<button onclick="stashDailyRemaining(${engine.dailyRemaining})" style="margin-top:15px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:none; padding:10px; font-size:14px;">+ Add Remaining to Vault</button>` : ''}
+            <div style="font-size:11px; margin-top:12px; font-weight:600; opacity:0.8;">All expenses factor in here. Unused funds move to Vault at midnight.</div>
         </div>
 
         <div class="card" style="padding: 20px;">
@@ -1233,6 +1124,34 @@ function viewFields() {
         
         <h3 style="margin-top:25px;">Current Budgets</h3>
         <div class="card">${html || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No budgets active.</p>'}</div>
+
+        <script>
+            function checkBudgetLimit() {
+                const val = parseFloat(document.getElementById('fAmount').value) || 0;
+                const freq = document.getElementById('fFreq').value;
+                const cDays = document.getElementById('fCustom') ? document.getElementById('fCustom').value : 1;
+                
+                let d = 30.4375;
+                if(freq==='daily') d=1; else if(freq==='weekly') d=7; else if(freq==='biweekly') d=14; 
+                else if(freq==='yearly') d=365.25; else if(freq==='custom') d=parseFloat(cDays)||1;
+                
+                const cycleMultiplier = window.engineAlwDaysTotal / d;
+                const requestedPool = val * cycleMultiplier;
+                const max = window.currentMaxBudgetAllowed;
+
+                if (requestedPool > max) {
+                    document.getElementById('budgetWarning').innerText = "❌ Expense is over available cycle limit! Cannot proceed.";
+                    document.getElementById('budgetWarning').style.display = 'block';
+                    document.getElementById('budgetSafe').style.display = 'none';
+                    document.getElementById('btnSaveBudget').disabled = true;
+                } else {
+                    document.getElementById('budgetWarning').style.display = 'none';
+                    document.getElementById('budgetSafe').style.display = 'block';
+                    document.getElementById('btnSaveBudget').disabled = false;
+                }
+            }
+            setTimeout(checkBudgetLimit, 100);
+        <\/script>
     `;
 }
 
@@ -1245,56 +1164,26 @@ function viewExpenses() {
 
     let opts = u.fields.map(f => `<option value="${f.name}">${f.name} (Budget)</option>`).join('');
     
-    let listHtml = '';
-    let foundExpenses = false;
-    
-    u.currentExpenses.forEach((e, i) => {
-        let dObj = new Date(e.date);
-        if(isNaN(dObj.getTime())) dObj = new Date();
-        const eDateStr = dObj.toLocaleDateString();
-        
-        if (eDateStr === (window.currentViewingDateStr || new Date().toLocaleDateString())) {
-            foundExpenses = true;
-            let isVault = e.category === 'Vault Transfer';
-            listHtml += `
-            <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
-                <div class="item-info">
-                    <strong>${e.category}</strong>
-                    <span style="border:none;">${dObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div class="item-value text-neg" style="color:${isVault ? 'var(--secondary)' : 'var(--alert)'}">
-                        ${isVault ? '+' : '-'}${formatMoney(e.amount)}
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:4px;">
-                        <button class="mini-btn" style="padding:4px 8px; border-color:var(--primary); color:var(--primary);" onclick="startEditExp(${i})">Edit</button>
-                        <button class="mini-btn" style="padding:4px 8px;" onclick="delExp(${i}, ${isVault}, ${e.amount})">✕</button>
-                    </div>
-                </div>
+    let list = u.currentExpenses.map((e, i) => {
+        let isVault = e.category === 'Vault Transfer';
+        return `
+        <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
+            <div class="item-info">
+                <strong>${e.category}</strong>
+                <span style="border:none;">${e.date.split(',')[0]}</span>
             </div>
-            `;
-        }
-    });
-
-    let eCatVal = 'Unplanned', eCustomVal = '', eAmtVal = '';
-    let btnText = "Save Expense";
-
-    if (window.editExpIdx > -1 && u.currentExpenses[window.editExpIdx]) {
-        const e = u.currentExpenses[window.editExpIdx];
-        if (u.fields.find(f => f.name === e.category)) {
-            eCatVal = e.category;
-        } else {
-            eCatVal = 'Unplanned';
-            eCustomVal = e.category;
-        }
-        eAmtVal = e.amount;
-        btnText = "Update Expense";
-    }
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="item-value text-neg" style="color:${isVault ? 'var(--secondary)' : 'var(--alert)'}">
+                    ${isVault ? '+' : '-'}${formatMoney(e.amount)}
+                </div>
+                <button class="mini-btn" style="padding:4px 8px;" onclick="delExp(${i}, ${isVault}, ${e.amount})">✕</button>
+            </div>
+        </div>
+    `}).join('');
 
     return `
         <h2>Record an Expense</h2>
         <div class="card">
-            <h3>${window.editExpIdx > -1 ? 'Edit Transaction' : 'New Transaction'} <span style="font-size:10px; color:var(--primary); display:block;">(Logging for ${window.currentViewingDateStr})</span></h3>
             <div class="form-group"><label>Which category?</label>
                 <select id="eCat" onchange="document.getElementById('eCustomWrap').style.display = this.value === 'Unplanned' ? 'block' : 'none';">
                     <option value="Unplanned" selected>Unplanned / General Daily Expense</option>
@@ -1305,12 +1194,11 @@ function viewExpenses() {
                 <label>Custom Category Name</label>
                 <input type="text" id="eCustomCat" placeholder="e.g. Coffee, Movie ticket">
             </div>
-            <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00" value="${eAmtVal}"></div>
-            <button class="btn-accent" onclick="recordExp()">${btnText}</button>
-            ${window.editExpIdx > -1 ? `<button class="btn-secondary" style="margin-top:10px;" onclick="cancelEditExp()">Cancel Edit</button>` : ''}
+            <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00"></div>
+            <button class="btn-accent" onclick="recordExp()">Save Expense</button>
         </div>
-        <h3 style="margin-top:25px;">Spending on ${window.currentViewingDateStr || new Date().toLocaleDateString()}</h3>
-        <div class="card">${foundExpenses ? listHtml : '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No expenses logged on this date.</p>'}</div>
+        <h3 style="margin-top:25px;">Recent Spending (This Cycle)</h3>
+        <div class="card">${list || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No expenses logged yet.</p>'}</div>
     `;
 }
 
@@ -1323,158 +1211,56 @@ function viewProfile() {
     let spentThisMonth = 0;
     let spentAllTime = 0;
 
+    // Generate calendar report data
     const dailyTotals = {};
-    const dailySaves = {};
+    let highestDay = { date: '', amount: 0 };
+
+    (u.currentExpenses || []).forEach(e => {
+        const amt = parseFloat(e.amount) || 0;
+        
+        // Populate specific calendar
+        if(e.category !== 'Vault Transfer') {
+            const dStr = new Date(e.date).toLocaleDateString();
+            dailyTotals[dStr] = (dailyTotals[dStr] || 0) + amt;
+            if (dailyTotals[dStr] > highestDay.amount) {
+                highestDay.amount = dailyTotals[dStr];
+                highestDay.date = dStr;
+            }
+        }
+    });
 
     (u.transactionLog || []).forEach(t => {
-        const amt = parseFloat(t.amount) || 0;
-        
-        let dObj = new Date(t.date);
-        if(isNaN(dObj.getTime())) dObj = new Date(); 
-        const dStr = dObj.toLocaleDateString();
-        
-        if (t.type === 'expense') {
+        if(t.type === 'expense') {
+            const tDate = new Date(t.date);
+            const amt = parseFloat(t.amount) || 0;
             spentAllTime += amt;
-            dailyTotals[dStr] = (dailyTotals[dStr] || 0) + amt;
 
-            if (dObj.getMonth() === now.getMonth() && dObj.getFullYear() === now.getFullYear()) {
+            if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
                 spentThisMonth += amt;
             }
-            const diffTime = Math.abs(now - dObj);
+
+            const diffTime = Math.abs(now - tDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays <= 7) {
                 spentThisWeek += amt;
             }
-        } else if (t.type === 'stash' || t.title.includes('Vault Transfer')) {
-            dailySaves[dStr] = (dailySaves[dStr] || 0) + amt;
         }
     });
 
-    const monthlyGroups = {}; 
-    const weeklyGroups = {};  
-    
-    const getWeekKey = (d) => {
-        const date = new Date(d);
-        date.setHours(0, 0, 0, 0);
-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-        const week1 = new Date(date.getFullYear(), 0, 4);
-        return date.getFullYear() + '-W' + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7 + 1);
-    };
-
-    Object.keys(dailyTotals).forEach(d => {
-        const dObj = new Date(d);
-        const mKey = `${dObj.getFullYear()}-${(dObj.getMonth()+1).toString().padStart(2, '0')}`;
-        const wKey = getWeekKey(dObj);
-        const exp = dailyTotals[d];
-        
-        if(!monthlyGroups[mKey]) monthlyGroups[mKey] = { spent:0, days:[], saves:0, saveDays:[] };
-        monthlyGroups[mKey].spent += exp;
-        monthlyGroups[mKey].days.push({date: d, exp});
-
-        if(!weeklyGroups[wKey]) weeklyGroups[wKey] = { spent:0, days:[], saves:0, saveDays:[] };
-        weeklyGroups[wKey].spent += exp;
-        weeklyGroups[wKey].days.push({date: d, exp});
-    });
-
-    Object.keys(dailySaves).forEach(d => {
-        const dObj = new Date(d);
-        const mKey = `${dObj.getFullYear()}-${(dObj.getMonth()+1).toString().padStart(2, '0')}`;
-        const wKey = getWeekKey(dObj);
-        const save = dailySaves[d];
-        
-        if(!monthlyGroups[mKey]) monthlyGroups[mKey] = { spent:0, days:[], saves:0, saveDays:[] };
-        monthlyGroups[mKey].saves += save;
-        monthlyGroups[mKey].saveDays.push({date: d, save});
-
-        if(!weeklyGroups[wKey]) weeklyGroups[wKey] = { spent:0, days:[], saves:0, saveDays:[] };
-        weeklyGroups[wKey].saves += save;
-        weeklyGroups[wKey].saveDays.push({date: d, save});
-    });
-
-    const monthHtml = Object.keys(monthlyGroups).sort().reverse().map(mKey => {
-        const g = monthlyGroups[mKey];
-        const maxExpDay = g.days.length ? g.days.reduce((a,b) => a.exp > b.exp ? a : b) : {date: 'N/A', exp: 0};
-        const maxSaveDay = g.saveDays.length ? g.saveDays.reduce((a,b) => a.save > b.save ? a : b) : {date: 'N/A', save: 0};
-        const avgExp = g.days.length ? (g.spent / g.days.length) : 0;
-        const avgSave = g.saveDays.length ? (g.saves / g.saveDays.length) : 0;
-
-        const dateObj = new Date(mKey + '-02');
-        const mName = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
-
+    let calendarHtml = Object.keys(dailyTotals).sort((a,b) => new Date(b) - new Date(a)).map(d => {
+        const isHighest = d === highestDay.date && highestDay.amount > 0;
         return `
-            <details>
-                <summary>${mName} <span style="font-size:12px; color:var(--text-muted); font-weight:600;">▼ Expand</span></summary>
-                <div class="details-content">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Total Spent:</span>
-                        <strong style="color:var(--alert);">${formatMoney(g.spent)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Mean Daily Expense:</span>
-                        <strong>${formatMoney(avgExp)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Most Expensive Day:</span>
-                        <strong>${maxExpDay.date} (${formatMoney(maxExpDay.exp)})</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Total Saved:</span>
-                        <strong style="color:var(--secondary);">${formatMoney(g.saves)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Mean Daily Save:</span>
-                        <strong>${formatMoney(avgSave)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-size:12px; color:var(--text-muted);">Highest Saved Day:</span>
-                        <strong>${maxSaveDay.date} (${formatMoney(maxSaveDay.save)})</strong>
-                    </div>
+            <div style="display:flex; justify-content:space-between; padding: 12px 0; border-bottom:1px solid var(--border);">
+                <div>
+                    <strong style="color:var(--text-main); font-size:14px;">📅 ${d}</strong>
+                    ${isHighest ? `<span style="background:var(--alert); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;">HIGHEST SPEND</span>` : ''}
                 </div>
-            </details>
+                <div style="font-weight:800; color:var(--alert); font-size:15px;">- ${formatMoney(dailyTotals[d])}</div>
+            </div>
         `;
     }).join('');
 
-    const weekHtml = Object.keys(weeklyGroups).sort().reverse().slice(0, 5).map(wKey => {
-        const g = weeklyGroups[wKey];
-        const maxExpDay = g.days.length ? g.days.reduce((a,b) => a.exp > b.exp ? a : b) : {date: 'N/A', exp: 0};
-        const maxSaveDay = g.saveDays.length ? g.saveDays.reduce((a,b) => a.save > b.save ? a : b) : {date: 'N/A', save: 0};
-        const avgExp = g.days.length ? (g.spent / g.days.length) : 0;
-        const avgSave = g.saveDays.length ? (g.saves / g.saveDays.length) : 0;
-
-        return `
-            <details>
-                <summary>Week ${wKey.split('W')[1]} (${wKey.split('-')[0]}) <span style="font-size:12px; color:var(--text-muted); font-weight:600;">▼ Expand</span></summary>
-                <div class="details-content">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Total Spent:</span>
-                        <strong style="color:var(--alert);">${formatMoney(g.spent)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Mean Daily Expense:</span>
-                        <strong>${formatMoney(avgExp)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Most Expensive Day:</span>
-                        <strong>${maxExpDay.date} (${formatMoney(maxExpDay.exp)})</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Total Saved:</span>
-                        <strong style="color:var(--secondary);">${formatMoney(g.saves)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:12px; color:var(--text-muted);">Mean Daily Save:</span>
-                        <strong>${formatMoney(avgSave)}</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-size:12px; color:var(--text-muted);">Highest Saved Day:</span>
-                        <strong>${maxSaveDay.date} (${formatMoney(maxSaveDay.save)})</strong>
-                    </div>
-                </div>
-            </details>
-        `;
-    }).join('');
-
-    const ledger = (u.transactionLog || []).slice(0, 50).map(t => {
+    const ledger = (u.transactionLog || []).map(t => {
         let color = t.type === 'income' || t.type === 'stash' ? 'var(--secondary)' : 'var(--alert)';
         let sign = t.type === 'income' || t.type === 'stash' ? '+' : '-';
         return `
@@ -1578,23 +1364,28 @@ function viewProfile() {
             <button onclick="logout()" class="btn-alert" style="margin-top:10px;">Log Out</button>
         </div>
 
-        <h3 style="margin-top:25px;">Monthly Reports</h3>
-        <div style="margin-bottom:20px;">
-            ${monthHtml || '<p style="text-align:center; font-size:12px; color:var(--text-muted);">Not enough data yet.</p>'}
+        <h3 style="margin-top:25px;">Calendar Report</h3>
+        <div class="card" style="max-height:300px; overflow-y:auto;">
+            ${calendarHtml || '<p style="text-align:center; font-size:12px; color:var(--text-muted);">No recorded expenses.</p>'}
         </div>
 
-        <h3 style="margin-top:25px;">Weekly Reports</h3>
-        <div style="margin-bottom:20px;">
-            ${weekHtml || '<p style="text-align:center; font-size:12px; color:var(--text-muted);">Not enough data yet.</p>'}
+        <h3 style="margin-top:25px;">Spending Overview</h3>
+        <div class="flex-row">
+            <div class="card" style="width: 48%; padding:16px; margin-bottom: 0;">
+                <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">This Week</div>
+                <div style="font-size:18px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentThisWeek)}</div>
+            </div>
+            <div class="card" style="width: 48%; padding:16px; margin-bottom: 0;">
+                <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">This Month</div>
+                <div style="font-size:18px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentThisMonth)}</div>
+            </div>
         </div>
-
-        <h3 style="margin-top:25px;">All-Time Overview</h3>
         <div class="card" style="padding:16px;">
             <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">All-Time Spent</div>
             <div style="font-size:24px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentAllTime)}</div>
         </div>
 
-        <h3 style="margin-top:25px;">Recent Ledger (Top 50)</h3>
+        <h3 style="margin-top:25px;">Complete Ledger</h3>
         <div class="card" style="max-height:400px; overflow-y:auto;">
             ${ledger || '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No history yet.</p>'}
         </div>
@@ -1696,7 +1487,7 @@ function register() {
 
 function logout() {
     appState.currentUser = null;
-    Storage.del('grasp_current_v8');
+    localStorage.removeItem('grasp_current_v8');
     navigate('auth');
 }
 
@@ -1736,7 +1527,7 @@ function borrowFromVault() {
         appState.currentUser.additionalIncomes = appState.currentUser.additionalIncomes || [];
         appState.currentUser.additionalIncomes.push({ name: 'Vault Borrow', amount: amt, type: 'onetime', frequency: 'daily', customDays: '' });
         
-        logTransaction('Vault Withdrawal (Borrow)', amt, 'expense', new Date().toLocaleString());
+        logTransaction('Vault Withdrawal (Borrow)', amt, 'expense');
         saveDB();
     });
 }
@@ -1752,7 +1543,7 @@ function addExtraInc() {
 
     appState.currentUser.additionalIncomes = appState.currentUser.additionalIncomes || [];
     appState.currentUser.additionalIncomes.push({ name: n, amount: a, type: t, frequency: f, customDays: c });
-    logTransaction(`Extra Income: ${n}`, a, 'income', new Date().toLocaleString());
+    logTransaction(`Extra Income: ${n}`, a, 'income');
     saveDB();
 }
 
@@ -1810,16 +1601,6 @@ function delField(i) {
     });
 }
 
-function startEditExp(i) {
-    window.editExpIdx = i;
-    renderCurrentView();
-}
-
-function cancelEditExp() {
-    window.editExpIdx = -1;
-    renderCurrentView();
-}
-
 function recordExp() {
     let c = $('eCat').value;
     if (c === 'Unplanned') {
@@ -1830,50 +1611,36 @@ function recordExp() {
     const amt = parseFloat($('eAmount').value);
     if(isNaN(amt) || amt <= 0) return uiAlert("Invalid Input", "Please enter a valid amount.");
 
-    let finalDateStr = new Date().toLocaleString();
-    if (window.currentViewingDateStr && window.currentViewingDateStr !== new Date().toLocaleDateString()) {
-        const inputDate = new Date(window.currentViewingDate.getTime()); 
-        inputDate.setHours(12, 0, 0); 
-        finalDateStr = inputDate.toLocaleString();
-    }
-
     const engine = runEngine();
     
-    if (window.editExpIdx === -1) {
-        let excess = 0;
-        const isBudget = appState.currentUser.fields.some(f => f.name === c);
-        
-        if (isBudget) {
-            const b = engine.fieldsBreakdown.find(x => x.name === c);
-            if (amt > b.remaining) excess = amt - b.remaining;
-        } else {
-            if (amt > engine.generalCycleRemaining) excess = amt - engine.generalCycleRemaining;
-        }
+    let excess = 0;
+    const isBudget = appState.currentUser.fields.some(f => f.name === c);
+    
+    if (isBudget) {
+        const b = engine.fieldsBreakdown.find(x => x.name === c);
+        if (amt > b.remaining) excess = amt - b.remaining;
+    } else {
+        if (amt > engine.generalCycleRemaining) excess = amt - engine.generalCycleRemaining;
+    }
 
-        if (excess > 0) {
-            if ((appState.currentUser.savings || 0) >= excess) {
-                uiAlert("Limit Reached", `Allocated limit reached! Deducting ${formatMoney(excess)} automatically from Vault/Savings to cover deficit.`);
-                appState.currentUser.savings -= excess;
-                logTransaction(`Vault Auto-Deduction (Overdraft)`, excess, 'expense', finalDateStr);
-            } else {
-                uiAlert("Transaction Blocked", `You do not have enough funds remaining OR enough in Vault (${formatMoney(appState.currentUser.savings || 0)}) to cover this deficit!`);
-                return;
-            }
+    if (excess > 0) {
+        if ((appState.currentUser.savings || 0) >= excess) {
+            uiAlert("Limit Reached", `Allocated limit reached! Deducting ${formatMoney(excess)} automatically from Vault/Savings to cover deficit.`);
+            appState.currentUser.savings -= excess;
+            logTransaction(`Vault Auto-Deduction (Overdraft)`, excess, 'expense');
+        } else {
+            uiAlert("Transaction Blocked", `You do not have enough funds remaining OR enough in Vault (${formatMoney(appState.currentUser.savings || 0)}) to cover this deficit!`);
+            return;
         }
     }
 
     appState.currentUser.currentExpenses = appState.currentUser.currentExpenses || [];
+    appState.currentUser.currentExpenses.push({ category: c, amount: amt, date: new Date().toLocaleString() });
     
-    if (window.editExpIdx > -1) {
-        appState.currentUser.currentExpenses[window.editExpIdx] = { category: c, amount: amt, date: finalDateStr };
-        logTransaction(`Edited Expense: ${c}`, amt, 'expense', finalDateStr);
-        window.editExpIdx = -1;
-    } else {
-        appState.currentUser.currentExpenses.push({ category: c, amount: amt, date: finalDateStr });
-        logTransaction(`Expense: ${c}`, amt, 'expense', finalDateStr);
-    }
-    
+    logTransaction(`Expense: ${c}`, amt, 'expense');
     saveDB();
+    $('eAmount').value = ''; 
+    if($('eCustomCat')) $('eCustomCat').value = '';
 }
 
 function delExp(i, isVault, amount) { 
@@ -1887,20 +1654,12 @@ function delExp(i, isVault, amount) {
 }
 
 function stashDailyRemaining(amt) {
-    uiConfirm("Save to Vault", `Move ${formatMoney(amt)} to your Vault for ${window.currentViewingDateStr}?`, () => {
+    uiConfirm("Save to Vault", `Move ${formatMoney(amt)} to your Vault today?`, () => {
         appState.currentUser.savings = (parseFloat(appState.currentUser.savings) || 0) + amt;
         appState.currentUser.currentExpenses = appState.currentUser.currentExpenses || [];
-
-        let finalDateStr = new Date().toLocaleString();
-        if (window.currentViewingDateStr !== new Date().toLocaleDateString()) {
-            const inputDate = new Date(window.currentViewingDate.getTime());
-            inputDate.setHours(12, 0, 0); 
-            finalDateStr = inputDate.toLocaleString();
-        }
-
-        appState.currentUser.currentExpenses.push({ category: 'Vault Transfer', amount: amt, date: finalDateStr });
+        appState.currentUser.currentExpenses.push({ category: 'Vault Transfer', amount: amt, date: new Date().toLocaleString() });
         
-        logTransaction('Daily Savings Stash', amt, 'stash', finalDateStr);
+        logTransaction('Daily Savings Stash', amt, 'stash');
         saveDB();
     });
 }
