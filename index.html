@@ -420,7 +420,7 @@
             padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 50; 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
-        body.theme-midnight nav, body.theme-abyssal nav, body.theme-venom nav, 
+        body.theme-midnight header, body.theme-abyssal nav, body.theme-venom nav, 
         body.theme-neotokyo nav, body.theme-dark nav, body.theme-assassin nav,
         body.theme-mage nav, body.theme-ghoul nav, body.theme-ghost2 nav,
         body.theme-space nav, body.theme-vampire nav, body.theme-graphic-space nav { 
@@ -542,22 +542,71 @@ document.addEventListener('keydown', function(e) {
 });
 
 /** APP VERSION CONTROL */
-const SYSTEM_VERSION = '8.5'; 
+const SYSTEM_VERSION = '8.10'; 
+
+/** SAFE LOCAL STORAGE WRAPPER */
+const Storage = {
+    get: function(k, fb) { try { const v = localStorage.getItem(k); return v ? v : fb; } catch(e) { return fb; } },
+    set: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
+    del: function(k) { try { localStorage.removeItem(k); } catch(e) {} }
+};
 
 /** GLOBAL VIEWING DATE STATE (For Time Travel) */
-window.currentViewingDateStr = new Date().toLocaleDateString();
+window.currentViewingDate = new Date();
+window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
 
 function setViewingDate(val) {
     if(!val) return;
     const [y, m, d] = val.split('-');
-    const newDate = new Date(y, m - 1, d);
-    window.currentViewingDateStr = newDate.toLocaleDateString();
+    window.currentViewingDate = new Date(y, m - 1, d);
+    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
+    renderCurrentView();
+}
+
+function shiftDate(offset) {
+    window.currentViewingDate.setDate(window.currentViewingDate.getDate() + offset);
+    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
     renderCurrentView();
 }
 
 function resetToToday() {
-    window.currentViewingDateStr = new Date().toLocaleDateString();
+    window.currentViewingDate = new Date();
+    window.currentViewingDateStr = window.currentViewingDate.toLocaleDateString();
     renderCurrentView();
+}
+
+function checkBudgetLimit() {
+    const amtEl = $('fAmount');
+    const freqEl = $('fFreq');
+    const customEl = $('fCustom');
+    const warningEl = $('budgetWarning');
+    const safeEl = $('budgetSafe');
+    const btnEl = $('btnSaveBudget');
+    
+    if (!amtEl || !freqEl || !warningEl || !safeEl || !btnEl) return;
+    
+    const val = parseFloat(amtEl.value) || 0;
+    const freq = freqEl.value;
+    const cDays = customEl ? customEl.value : 1;
+    
+    let d = 30.4375;
+    if(freq==='daily') d=1; else if(freq==='weekly') d=7; else if(freq==='biweekly') d=14; 
+    else if(freq==='yearly') d=365.25; else if(freq==='custom') d=parseFloat(cDays)||1;
+    
+    const cycleMultiplier = window.engineAlwDaysTotal / d;
+    const requestedPool = val * cycleMultiplier;
+    const max = window.currentMaxBudgetAllowed;
+
+    if (requestedPool > max) {
+        warningEl.innerText = "❌ Expense is over available cycle limit! Cannot proceed.";
+        warningEl.style.display = 'block';
+        safeEl.style.display = 'none';
+        btnEl.disabled = true;
+    } else {
+        warningEl.style.display = 'none';
+        safeEl.style.display = 'block';
+        btnEl.disabled = false;
+    }
 }
 
 /** SMART UI CONTROLLERS */
@@ -602,24 +651,25 @@ function uiPrompt(title, msg, onConfirm) {
 
 /** Database & State Management */
 let appState = {
-    binId: localStorage.getItem('grasp_binId') || '69b65055b7ec241ddc6d1963',
-    apiKey: localStorage.getItem('grasp_apiKey') || '$2a$10$Tro6Ud5UHq2VqKQnp8Kxo.1MFLWorIUvmpahlY7t9jqDPWr0Xg2em',
+    binId: Storage.get('grasp_binId', '69b65055b7ec241ddc6d1963'),
+    apiKey: Storage.get('grasp_apiKey', '$2a$10$Tro6Ud5UHq2VqKQnp8Kxo.1MFLWorIUvmpahlY7t9jqDPWr0Xg2em'),
     users: [], currentUser: null
 };
 
 window.editFieldIdx = -1;
+window.editExpIdx = -1;
 
 function initLocalDB() {
-    const currentVer = localStorage.getItem('grasp_sys_version');
+    const currentVer = Storage.get('grasp_sys_version', '');
     if (currentVer !== SYSTEM_VERSION) {
-        localStorage.removeItem('grasp_current_v8');
-        localStorage.setItem('grasp_sys_version', SYSTEM_VERSION);
+        Storage.del('grasp_current_v8');
+        Storage.set('grasp_sys_version', SYSTEM_VERSION);
     }
 
-    const localUsers = localStorage.getItem('grasp_users_v8'); 
+    const localUsers = Storage.get('grasp_users_v8', null); 
     if (localUsers) appState.users = JSON.parse(localUsers);
     
-    const loggedIn = localStorage.getItem('grasp_current_v8'); 
+    const loggedIn = Storage.get('grasp_current_v8', null); 
     if (loggedIn) {
         appState.currentUser = JSON.parse(loggedIn);
         handleDayRollOver();
@@ -670,9 +720,9 @@ async function saveDB() {
         const idx = appState.users.findIndex(u => u.username === appState.currentUser.username);
         if (idx > -1) appState.users[idx] = appState.currentUser;
         else appState.users.push(appState.currentUser);
-        localStorage.setItem('grasp_current_v8', JSON.stringify(appState.currentUser));
+        Storage.set('grasp_current_v8', JSON.stringify(appState.currentUser));
     }
-    localStorage.setItem('grasp_users_v8', JSON.stringify(appState.users));
+    Storage.set('grasp_users_v8', JSON.stringify(appState.users));
     
     renderCurrentView();
 
@@ -750,7 +800,11 @@ function runEngine() {
 
     (u.currentExpenses || []).forEach(e => {
         currentTotalExp += parseFloat(e.amount);
-        const eDateStr = new Date(e.date).toLocaleDateString();
+        
+        let dObj = new Date(e.date);
+        if(isNaN(dObj.getTime())) dObj = new Date(); // Failsafe against old corrupted dates
+        const eDateStr = dObj.toLocaleDateString();
+        
         const amt = parseFloat(e.amount);
 
         let isBudgetExpense = false;
@@ -781,7 +835,7 @@ function runEngine() {
         }
     });
 
-    const viewingDateObj = window.currentViewingDateStr ? new Date(window.currentViewingDateStr) : new Date();
+    const viewingDateObj = window.currentViewingDate;
     let daysRemaining = Math.ceil((cycleEndTarget - viewingDateObj.getTime()) / 86400000);
     if (daysRemaining < 1) daysRemaining = 1; 
 
@@ -846,6 +900,7 @@ let currentView = 'auth';
 function navigate(viewName) {
     currentView = viewName;
     window.editFieldIdx = -1; 
+    window.editExpIdx = -1; 
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     let navItem = document.querySelector(`.nav-item[onclick="navigate('${viewName}')"]`);
     if(navItem) navItem.classList.add('active');
@@ -874,6 +929,10 @@ function renderCurrentView() {
     }
 
     app.innerHTML = `<div class="view active">${html}</div>${floatingBtn}`;
+    
+    if (currentView === 'fields') {
+        setTimeout(checkBudgetLimit, 50);
+    }
 }
 
 function renderFreqSelect(idPrefix, defaultFreq, defaultCustom) {
@@ -987,7 +1046,7 @@ function viewDashboard() {
 
     const freqLabel = appState.currentUser.allowance.frequency.toUpperCase();
     
-    const viewingDateObj = window.currentViewingDateStr ? new Date(window.currentViewingDateStr) : new Date();
+    const viewingDateObj = window.currentViewingDate;
     const todayLabel = viewingDateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const yyyy = viewingDateObj.getFullYear();
     const mm = String(viewingDateObj.getMonth() + 1).padStart(2, '0');
@@ -998,14 +1057,20 @@ function viewDashboard() {
     return `
         ${warningHtml}
 
-        <div style="text-align:center; margin-bottom:20px; position:relative; display:inline-block; left:50%; transform:translateX(-50%);">
-            <input type="date" id="homeDatePicker" value="${datePickerVal}" style="position:absolute; opacity:0.01; width:100%; height:100%; top:0; left:0; cursor:pointer; z-index:10;" onchange="setViewingDate(this.value)" onclick="try{this.showPicker();}catch(e){}">
-            <div style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; pointer-events:none;">
-                📅 ${todayLabel} <span style="font-size:10px; color:var(--primary); display:block; margin-top:2px;">(TAP TO CHANGE DATE)</span>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px;">
+            <button onclick="shiftDate(-1)" style="width:36px; height:36px; border-radius:12px; padding:0; background:var(--surface); border:1px solid var(--border); color:var(--primary); box-shadow:0 2px 8px rgba(0,0,0,0.05); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;">‹</button>
+            
+            <div style="position:relative; background: var(--primary-glow); padding: 10px 20px; border-radius: 14px; text-align:center; border: 1px solid rgba(0,0,0,0.05); min-width: 180px;">
+                <input type="date" id="homeDatePicker" value="${datePickerVal}" style="position:absolute; opacity:0.01; width:100%; height:100%; top:0; left:0; cursor:pointer; z-index:10;" onchange="setViewingDate(this.value)" onclick="try{this.showPicker();}catch(e){}">
+                <div style="font-size:12px; font-weight:800; color:var(--primary); text-transform:uppercase; pointer-events:none; white-space:nowrap;">
+                    📅 ${todayLabel}
+                </div>
             </div>
-            <div style="font-size:16px; font-weight:900; color:var(--primary); margin-top:6px; pointer-events:none;">
-                TOTAL BUDGET: ${formatMoney(engine.cycleIncome)} • ${freqLabel}
-            </div>
+
+            <button onclick="shiftDate(1)" style="width:36px; height:36px; border-radius:12px; padding:0; background:var(--surface); border:1px solid var(--border); color:var(--primary); box-shadow:0 2px 8px rgba(0,0,0,0.05); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;">›</button>
+        </div>
+        <div style="text-align:center; font-size:15px; font-weight:900; color:var(--text-main); margin-bottom:20px; opacity:0.8;">
+            TOTAL BUDGET: ${formatMoney(engine.cycleIncome)} • ${freqLabel}
         </div>
         
         <div class="card" style="padding: 18px; border-color: var(--primary);">
@@ -1184,7 +1249,10 @@ function viewExpenses() {
     let foundExpenses = false;
     
     u.currentExpenses.forEach((e, i) => {
-        const eDateStr = new Date(e.date).toLocaleDateString();
+        let dObj = new Date(e.date);
+        if(isNaN(dObj.getTime())) dObj = new Date();
+        const eDateStr = dObj.toLocaleDateString();
+        
         if (eDateStr === (window.currentViewingDateStr || new Date().toLocaleDateString())) {
             foundExpenses = true;
             let isVault = e.category === 'Vault Transfer';
@@ -1192,13 +1260,16 @@ function viewExpenses() {
             <div class="list-item" style="flex-direction:row; justify-content:space-between; align-items:center;">
                 <div class="item-info">
                     <strong>${e.category}</strong>
-                    <span style="border:none;">${new Date(e.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span style="border:none;">${dObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div class="item-value text-neg" style="color:${isVault ? 'var(--secondary)' : 'var(--alert)'}">
                         ${isVault ? '+' : '-'}${formatMoney(e.amount)}
                     </div>
-                    <button class="mini-btn" style="padding:4px 8px;" onclick="delExp(${i}, ${isVault}, ${e.amount})">✕</button>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <button class="mini-btn" style="padding:4px 8px; border-color:var(--primary); color:var(--primary);" onclick="startEditExp(${i})">Edit</button>
+                        <button class="mini-btn" style="padding:4px 8px;" onclick="delExp(${i}, ${isVault}, ${e.amount})">✕</button>
+                    </div>
                 </div>
             </div>
             `;
@@ -1223,6 +1294,7 @@ function viewExpenses() {
     return `
         <h2>Record an Expense</h2>
         <div class="card">
+            <h3>${window.editExpIdx > -1 ? 'Edit Transaction' : 'New Transaction'} <span style="font-size:10px; color:var(--primary); display:block;">(Logging for ${window.currentViewingDateStr})</span></h3>
             <div class="form-group"><label>Which category?</label>
                 <select id="eCat" onchange="document.getElementById('eCustomWrap').style.display = this.value === 'Unplanned' ? 'block' : 'none';">
                     <option value="Unplanned" selected>Unplanned / General Daily Expense</option>
@@ -1233,8 +1305,9 @@ function viewExpenses() {
                 <label>Custom Category Name</label>
                 <input type="text" id="eCustomCat" placeholder="e.g. Coffee, Movie ticket">
             </div>
-            <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00"></div>
-            <button class="btn-accent" onclick="recordExp()">Save Expense</button>
+            <div class="form-group"><label>Amount Spent</label><input type="number" id="eAmount" placeholder="0.00" value="${eAmtVal}"></div>
+            <button class="btn-accent" onclick="recordExp()">${btnText}</button>
+            ${window.editExpIdx > -1 ? `<button class="btn-secondary" style="margin-top:10px;" onclick="cancelEditExp()">Cancel Edit</button>` : ''}
         </div>
         <h3 style="margin-top:25px;">Spending on ${window.currentViewingDateStr || new Date().toLocaleDateString()}</h3>
         <div class="card">${foundExpenses ? listHtml : '<p style="text-align:center; font-weight:600; font-size:13px; color:var(--text-muted);">No expenses logged on this date.</p>'}</div>
@@ -1255,17 +1328,19 @@ function viewProfile() {
 
     (u.transactionLog || []).forEach(t => {
         const amt = parseFloat(t.amount) || 0;
-        const dStr = new Date(t.date).toLocaleDateString();
+        
+        let dObj = new Date(t.date);
+        if(isNaN(dObj.getTime())) dObj = new Date(); 
+        const dStr = dObj.toLocaleDateString();
         
         if (t.type === 'expense') {
             spentAllTime += amt;
             dailyTotals[dStr] = (dailyTotals[dStr] || 0) + amt;
 
-            const tDate = new Date(t.date);
-            if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
+            if (dObj.getMonth() === now.getMonth() && dObj.getFullYear() === now.getFullYear()) {
                 spentThisMonth += amt;
             }
-            const diffTime = Math.abs(now - tDate);
+            const diffTime = Math.abs(now - dObj);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays <= 7) {
                 spentThisWeek += amt;
@@ -1516,7 +1591,7 @@ function viewProfile() {
         <h3 style="margin-top:25px;">All-Time Overview</h3>
         <div class="card" style="padding:16px;">
             <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted);">All-Time Spent</div>
-            <div style="font-size:24px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(allTimeSpent)}</div>
+            <div style="font-size:24px; font-weight:900; color:var(--alert); margin-top:5px;">${formatMoney(spentAllTime)}</div>
         </div>
 
         <h3 style="margin-top:25px;">Recent Ledger (Top 50)</h3>
@@ -1621,7 +1696,7 @@ function register() {
 
 function logout() {
     appState.currentUser = null;
-    localStorage.removeItem('grasp_current_v8');
+    Storage.del('grasp_current_v8');
     navigate('auth');
 }
 
@@ -1757,7 +1832,7 @@ function recordExp() {
 
     let finalDateStr = new Date().toLocaleString();
     if (window.currentViewingDateStr && window.currentViewingDateStr !== new Date().toLocaleDateString()) {
-        const inputDate = new Date(window.currentViewingDateStr);
+        const inputDate = new Date(window.currentViewingDate.getTime()); 
         inputDate.setHours(12, 0, 0); 
         finalDateStr = inputDate.toLocaleString();
     }
@@ -1818,7 +1893,7 @@ function stashDailyRemaining(amt) {
 
         let finalDateStr = new Date().toLocaleString();
         if (window.currentViewingDateStr !== new Date().toLocaleDateString()) {
-            const inputDate = new Date(window.currentViewingDateStr);
+            const inputDate = new Date(window.currentViewingDate.getTime());
             inputDate.setHours(12, 0, 0); 
             finalDateStr = inputDate.toLocaleString();
         }
